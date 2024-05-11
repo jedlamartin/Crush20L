@@ -10,39 +10,36 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+
 OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCrush20LAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
     : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts)
 
 {
-    gainLabel.setText("Gain", juce::dontSendNotification);
-    this->addAndMakeVisible(gainLabel);
 
     this->addAndMakeVisible(gainSlider);
     gainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "gain", gainSlider));
-    
-
-    bassLabel.setText("Bass", juce::dontSendNotification);
-    this->addAndMakeVisible(bassLabel);
 
     this->addAndMakeVisible(bassSlider);
     bassAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "bass", bassSlider));
 
-
-    midLabel.setText("Mid", juce::dontSendNotification);
-    this->addAndMakeVisible(midLabel);
-
     this->addAndMakeVisible(midSlider);
     midAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "mid", midSlider));
-
-    
-    trebleLabel.setText("Treble", juce::dontSendNotification);
-    this->addAndMakeVisible(trebleLabel);
 
     this->addAndMakeVisible(trebleSlider);
     trebleAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "treble", trebleSlider));
 
+    this->addAndMakeVisible(odSlider);
+    odAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "od", odSlider));
     
-    setSize (400, 300);
+    this->addAndMakeVisible(odButton);
+    odButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "odButton", odButton));
+    
+    this->addAndMakeVisible(volSlider);
+    volAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "vol", volSlider));
+
+
+    
+    setSize (1000, 400);
 
 }
 
@@ -60,8 +57,15 @@ void OrangeCrush20LAudioProcessorEditor::paint (juce::Graphics& g)
 
 void OrangeCrush20LAudioProcessorEditor::resized()
 {
-    this->gainSlider.setBounds(15, 15, 300, 300);
-    this->bassSlider.setBounds(15, 50, 300, 300);
-    this->midSlider.setBounds(15, 100, 300, 300);
-    this->trebleSlider.setBounds(15, 125, 300, 300);
+    this->gainSlider.setBounds(15, 0, 300, 50);
+    this->bassSlider.setBounds(15, 100, 300, 50);
+    this->midSlider.setBounds(15, 200, 300, 50);
+    this->trebleSlider.setBounds(15, 300, 300, 50);
+    this->odSlider.setBounds(400, 0, 300, 50);
+    this->odButton.setBounds(400, 100, 300, 50);
+    this->volSlider.setBounds(400, 200, 300, 50);
+}
+
+Knob::Knob(juce::RangedAudioParameter& param) :juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalDrag, NoTextBox), param(&param) {
+    this->setLookAndFeel(&this->lookAndFeel);
 }

@@ -31,7 +31,7 @@ inline CircularBuffer<T, size>::CircularBuffer(const T& initValue) : oldestIndex
 template<class T, size_t size>
 inline void CircularBuffer<T, size>::push(const T& element) {
     this->buf[this->oldestIndex] = element;
-    ++this->oldestIndex % size;
+    this->oldestIndex = ++this->oldestIndex % size;
 }
 
 template<class T, size_t size>

@@ -8,200 +8,143 @@
   ==============================================================================
 */
 
-#include "Stage3.h"
+#include "Stage3WithMatrix.h"
 
-template <typename T, size_t cols, size_t rows>
-class Matrix {
-private:
-    std::array<T, cols * rows> arr;
-};
+static bool gluInvertMatrix(const juce::dsp::Matrix<float>& m, juce::dsp::Matrix<float>& outM) {
+    juce::dsp::Matrix<float> inv(4, 4);
+    double det;
 
-static std::array<float, 4> matrixMul(const std::array<float, 16>& A, const std::array<float, 4>& B) {
-    std::array<float, 4> C;
-    C[0] = A[0] * B[0] + A[1] * B[1] + A[2] * B[2] + A[3] * B[3];
-    C[1] = A[4] * B[0] + A[5] * B[1] + A[6] * B[2] + A[7] * B[3];
-    C[2] = A[8] * B[0] + A[9] * B[1] + A[10] * B[2] + A[11] * B[3];
-    C[3] = A[12] * B[0] + A[13] * B[1] + A[14] * B[2] + A[15] * B[3];
-    return C;
-}
 
-static std::array<float, 16> matrixMul(const std::array<float, 16>& A, const std::array<float, 16>& B) {
-    std::array<float, 16> C;
-    C[0] = A[0] * B[0] + A[1] * B[4] + A[2] * B[8] + A[3] * B[12];
-    C[1] = A[0] * B[1] + A[1] * B[5] + A[2] * B[9] + A[3] * B[13];
-    C[2] = A[0] * B[2] + A[1] * B[6] + A[2] * B[10] + A[3] * B[14];
-    C[3] = A[0] * B[3] + A[1] * B[7] + A[2] * B[11] + A[3] * B[15];
-    
-    C[4] = A[4] * B[0] + A[5] * B[4] + A[6] * B[8] + A[7] * B[12];
-    C[5] = A[4] * B[1] + A[5] * B[5] + A[6] * B[9] + A[7] * B[13];
-    C[6] = A[4] * B[2] + A[5] * B[6] + A[6] * B[10] + A[7] * B[14];
-    C[7] = A[4] * B[3] + A[5] * B[7] + A[6] * B[11] + A[7] * B[15];
+    inv(0, 0) = m(1, 1) * m(2, 2) * m(3, 3) -
+        m(1, 1) * m(3, 2) * m(2, 3) -
+        m(1, 2) * m(2, 1) * m(3, 3) +
+        m(1, 2) * m(3, 1) * m(2, 3) +
+        m(1, 3) * m(2, 1) * m(3, 2) -
+        m(1, 3) * m(3, 1) * m(2, 2);
 
-    C[8] = A[8] * B[0] + A[9] * B[4] + A[10] * B[8] + A[11] * B[12];
-    C[9] = A[8] * B[1] + A[9] * B[5] + A[10] * B[9] + A[11] * B[13];
-    C[10] = A[8] * B[2] + A[9] * B[6] + A[10] * B[10] + A[11] * B[14];
-    C[11] = A[8] * B[3] + A[9] * B[7] + A[10] * B[11] + A[11] * B[15];
+    inv(0, 1) = -m(0, 1) * m(2, 2) * m(3, 3) +
+        m(0, 1) * m(3, 2) * m(2, 3) +
+        m(0, 2) * m(2, 1) * m(3, 3) -
+        m(0, 2) * m(3, 1) * m(2, 3) -
+        m(0, 3) * m(2, 1) * m(3, 2) +
+        m(0, 3) * m(3, 1) * m(2, 2);
 
-    C[12] = A[12] * B[0] + A[13] * B[4] + A[14] * B[8] + A[15] * B[12];
-    C[13] = A[12] * B[1] + A[13] * B[5] + A[14] * B[9] + A[15] * B[13];
-    C[14] = A[12] * B[2] + A[13] * B[6] + A[14] * B[10] + A[15] * B[14];
-    C[15] = A[12] * B[3] + A[13] * B[7] + A[14] * B[11] + A[15] * B[15];
-    return C;
-}
+    inv(0, 2) = m(0, 1) * m(1, 2) * m(3, 3) -
+        m(0, 1) * m(3, 2) * m(1, 3) -
+        m(0, 2) * m(1, 1) * m(3, 3) +
+        m(0, 2) * m(3, 1) * m(1, 3) +
+        m(0, 3) * m(1, 1) * m(3, 2) -
+        m(0, 3) * m(3, 1) * m(1, 2);
 
-static float matrixMul(const std::array<float, 4>& A, const std::array<float, 4>& B) {
-    return A[0] * B[0] + A[1] * B[1] + A[2] * B[2] + A[3] * B[3];
-}
+    inv(0, 3) = -m(0, 1) * m(1, 2) * m(2, 3) +
+        m(0, 1) * m(2, 2) * m(1, 3) +
+        m(0, 2) * m(1, 1) * m(2, 3) -
+        m(0, 2) * m(2, 1) * m(1, 3) -
+        m(0, 3) * m(1, 1) * m(2, 2) +
+        m(0, 3) * m(2, 1) * m(1, 2);
 
-static std::array<float, 4> matrixMul(const std::array<float, 4>& A, float B) {
-    std::array<float, 4> C{};
-    for (int i = 0; i < A.size(); i++) {
-        C[i] = B * A[i];
-    }
-    return C;
-}
+    inv(1, 0) = -m(1, 0) * m(2, 2) * m(3, 3) +
+        m(1, 0) * m(3, 2) * m(2, 3) +
+        m(1, 2) * m(2, 0) * m(3, 3) -
+        m(1, 2) * m(3, 0) * m(2, 3) -
+        m(1, 3) * m(2, 0) * m(3, 2) +
+        m(1, 3) * m(3, 0) * m(2, 2);
 
-static std::array<float, 4> matrixAdd(const std::array<float, 4>& A, const std::array<float, 4>& B) {
-    std::array<float, 4> C;
-    C[0] = A[0] + B[0];
-    C[0] = A[1] + B[1];
-    C[0] = A[2] + B[2];
-    C[0] = A[3] + B[3];
-    return C;
-}
+    inv(1, 1) = m(0, 0) * m(2, 2) * m(3, 3) -
+        m(0, 0) * m(3, 2) * m(2, 3) -
+        m(0, 2) * m(2, 0) * m(3, 3) +
+        m(0, 2) * m(3, 0) * m(2, 3) +
+        m(0, 3) * m(2, 0) * m(3, 2) -
+        m(0, 3) * m(3, 0) * m(2, 2);
 
-static bool gluInvertMatrix(const std::array<float, 16>& m, std::array<float, 16>& invOut)
-{
-    std::array<float, 16> inv;
-    float det;
-    int i;
+    inv(1, 2) = -m(0, 0) * m(1, 2) * m(3, 3) +
+        m(0, 0) * m(3, 2) * m(1, 3) +
+        m(0, 2) * m(1, 0) * m(3, 3) -
+        m(0, 2) * m(3, 0) * m(1, 3) -
+        m(0, 3) * m(1, 0) * m(3, 2) +
+        m(0, 3) * m(3, 0) * m(1, 2);
 
-    inv[0] = m[5] * m[10] * m[15] -
-        m[5] * m[11] * m[14] -
-        m[9] * m[6] * m[15] +
-        m[9] * m[7] * m[14] +
-        m[13] * m[6] * m[11] -
-        m[13] * m[7] * m[10];
+    inv(1, 3) = m(0, 0) * m(1, 2) * m(2, 3) -
+        m(0, 0) * m(2, 2) * m(1, 3) -
+        m(0, 2) * m(1, 0) * m(2, 3) +
+        m(0, 2) * m(2, 0) * m(1, 3) +
+        m(0, 3) * m(1, 0) * m(2, 2) -
+        m(0, 3) * m(2, 0) * m(1, 2);
 
-    inv[4] = -m[4] * m[10] * m[15] +
-        m[4] * m[11] * m[14] +
-        m[8] * m[6] * m[15] -
-        m[8] * m[7] * m[14] -
-        m[12] * m[6] * m[11] +
-        m[12] * m[7] * m[10];
+    inv(2, 0) = m(1, 0) * m(2, 1) * m(3, 3) -
+        m(1, 0) * m(3, 1) * m(2, 3) -
+        m(1, 1) * m(2, 0) * m(3, 3) +
+        m(1, 1) * m(3, 0) * m(2, 3) +
+        m(1, 3) * m(2, 0) * m(3, 1) -
+        m(1, 3) * m(3, 0) * m(2, 1);
 
-    inv[8] = m[4] * m[9] * m[15] -
-        m[4] * m[11] * m[13] -
-        m[8] * m[5] * m[15] +
-        m[8] * m[7] * m[13] +
-        m[12] * m[5] * m[11] -
-        m[12] * m[7] * m[9];
+    inv(2, 1) = -m(0, 0) * m(2, 1) * m(3, 3) +
+        m(0, 0) * m(3, 1) * m(2, 3) +
+        m(0, 1) * m(2, 0) * m(3, 3) -
+        m(0, 1) * m(3, 0) * m(2, 3) -
+        m(0, 3) * m(2, 0) * m(3, 1) +
+        m(0, 3) * m(3, 0) * m(2, 1);
 
-    inv[12] = -m[4] * m[9] * m[14] +
-        m[4] * m[10] * m[13] +
-        m[8] * m[5] * m[14] -
-        m[8] * m[6] * m[13] -
-        m[12] * m[5] * m[10] +
-        m[12] * m[6] * m[9];
+    inv(2, 2) = m(0, 0) * m(1, 1) * m(3, 3) -
+        m(0, 0) * m(3, 1) * m(1, 3) -
+        m(0, 1) * m(1, 0) * m(3, 3) +
+        m(0, 1) * m(3, 0) * m(1, 3) +
+        m(0, 3) * m(1, 0) * m(3, 1) -
+        m(0, 3) * m(3, 0) * m(1, 1);
 
-    inv[1] = -m[1] * m[10] * m[15] +
-        m[1] * m[11] * m[14] +
-        m[9] * m[2] * m[15] -
-        m[9] * m[3] * m[14] -
-        m[13] * m[2] * m[11] +
-        m[13] * m[3] * m[10];
+    inv(2, 3) = -m(0, 0) * m(1, 1) * m(2, 3) +
+        m(0, 0) * m(2, 1) * m(1, 3) +
+        m(0, 1) * m(1, 0) * m(2, 3) -
+        m(0, 1) * m(2, 0) * m(1, 3) -
+        m(0, 3) * m(1, 0) * m(2, 1) +
+        m(0, 3) * m(2, 0) * m(1, 1);
 
-    inv[5] = m[0] * m[10] * m[15] -
-        m[0] * m[11] * m[14] -
-        m[8] * m[2] * m[15] +
-        m[8] * m[3] * m[14] +
-        m[12] * m[2] * m[11] -
-        m[12] * m[3] * m[10];
+    inv(3, 0) = -m(1, 0) * m(2, 1) * m(3, 2) +
+        m(1, 0) * m(3, 1) * m(2, 2) +
+        m(1, 1) * m(2, 0) * m(3, 2) -
+        m(1, 1) * m(3, 0) * m(2, 2) -
+        m(1, 2) * m(2, 0) * m(3, 1) +
+        m(1, 2) * m(3, 0) * m(2, 1);
 
-    inv[9] = -m[0] * m[9] * m[15] +
-        m[0] * m[11] * m[13] +
-        m[8] * m[1] * m[15] -
-        m[8] * m[3] * m[13] -
-        m[12] * m[1] * m[11] +
-        m[12] * m[3] * m[9];
+    inv(3, 1) = m(0, 0) * m(2, 1) * m(3, 2) -
+        m(0, 0) * m(3, 1) * m(2, 2) -
+        m(0, 1) * m(2, 0) * m(3, 2) +
+        m(0, 1) * m(3, 0) * m(2, 2) +
+        m(0, 2) * m(2, 0) * m(3, 1) -
+        m(0, 2) * m(3, 0) * m(2, 1);
 
-    inv[13] = m[0] * m[9] * m[14] -
-        m[0] * m[10] * m[13] -
-        m[8] * m[1] * m[14] +
-        m[8] * m[2] * m[13] +
-        m[12] * m[1] * m[10] -
-        m[12] * m[2] * m[9];
+    inv(3, 2) = -m(0, 0) * m(1, 1) * m(3, 2) +
+        m(0, 0) * m(3, 1) * m(1, 2) +
+        m(0, 1) * m(1, 0) * m(3, 2) -
+        m(0, 1) * m(3, 0) * m(1, 2) -
+        m(0, 2) * m(1, 0) * m(3, 1) +
+        m(0, 2) * m(3, 0) * m(1, 1);
 
-    inv[2] = m[1] * m[6] * m[15] -
-        m[1] * m[7] * m[14] -
-        m[5] * m[2] * m[15] +
-        m[5] * m[3] * m[14] +
-        m[13] * m[2] * m[7] -
-        m[13] * m[3] * m[6];
+    inv(3, 3) = m(0, 0) * m(1, 1) * m(2, 2) -
+        m(0, 0) * m(2, 1) * m(1, 2) -
+        m(0, 1) * m(1, 0) * m(2, 2) +
+        m(0, 1) * m(2, 0) * m(1, 2) +
+        m(0, 2) * m(1, 0) * m(2, 1) -
+        m(0, 2) * m(2, 0) * m(1, 1);
 
-    inv[6] = -m[0] * m[6] * m[15] +
-        m[0] * m[7] * m[14] +
-        m[4] * m[2] * m[15] -
-        m[4] * m[3] * m[14] -
-        m[12] * m[2] * m[7] +
-        m[12] * m[3] * m[6];
-
-    inv[10] = m[0] * m[5] * m[15] -
-        m[0] * m[7] * m[13] -
-        m[4] * m[1] * m[15] +
-        m[4] * m[3] * m[13] +
-        m[12] * m[1] * m[7] -
-        m[12] * m[3] * m[5];
-
-    inv[14] = -m[0] * m[5] * m[14] +
-        m[0] * m[6] * m[13] +
-        m[4] * m[1] * m[14] -
-        m[4] * m[2] * m[13] -
-        m[12] * m[1] * m[6] +
-        m[12] * m[2] * m[5];
-
-    inv[3] = -m[1] * m[6] * m[11] +
-        m[1] * m[7] * m[10] +
-        m[5] * m[2] * m[11] -
-        m[5] * m[3] * m[10] -
-        m[9] * m[2] * m[7] +
-        m[9] * m[3] * m[6];
-
-    inv[7] = m[0] * m[6] * m[11] -
-        m[0] * m[7] * m[10] -
-        m[4] * m[2] * m[11] +
-        m[4] * m[3] * m[10] +
-        m[8] * m[2] * m[7] -
-        m[8] * m[3] * m[6];
-
-    inv[11] = -m[0] * m[5] * m[11] +
-        m[0] * m[7] * m[9] +
-        m[4] * m[1] * m[11] -
-        m[4] * m[3] * m[9] -
-        m[8] * m[1] * m[7] +
-        m[8] * m[3] * m[5];
-
-    inv[15] = m[0] * m[5] * m[10] -
-        m[0] * m[6] * m[9] -
-        m[4] * m[1] * m[10] +
-        m[4] * m[2] * m[9] +
-        m[8] * m[1] * m[6] -
-        m[8] * m[2] * m[5];
-
-    det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+    det = m(0, 0) * inv(0, 0) + m(1, 0) * inv(0, 1) + m(2, 0) * inv(0, 2) + m(3, 0) * inv(0, 3);
 
     if (det == 0)
         return false;
 
     det = 1.0 / det;
 
-    for (i = 0; i < 16; i++)
-        invOut[i] = inv[i] * det;
 
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            outM(i, j) = inv(i, j) * det;
+        }
+    }
     return true;
 }
 
-static float closestElementLinearInterpolate(const float x, const std::vector<float>& xArray, const std::vector<float>& yArray) {
+template <typename T>
+static T closestElementLinearInterpolate(const T& x, const std::vector<T>& xArray, const std::vector<T>& yArray) {
     size_t size = xArray.size();
     if (x < xArray[0]) {
         return yArray[0];
@@ -219,10 +162,11 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
 
         if (x < xArray[mid]) {
             if (mid > 0 && x > xArray[mid - 1]) {
-                float div = xArray[mid] - xArray[mid - 1];
-                float mull = (xArray[mid] - x) / div;
-                float mulr = (x - xArray[mid - 1]) / div;
-                float test = xArray[mid - 1] * mull + xArray[mid] * mulr;
+                //idx = (x - array[mid] < x - array[mid - 1]) ? mid : mid - 1;
+                T div = xArray[mid] - xArray[mid - 1];
+                T mull = (xArray[mid] - x) / div;
+                T mulr = (x - xArray[mid - 1]) / div;
+                T test = xArray[mid - 1] * mull + xArray[mid] * mulr;
                 //DBG(mull);
                 //DBG(mulr);
                 //DBG(mulr + mull);
@@ -233,10 +177,11 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
         }
         else {
             if (mid < size - 1 && x < xArray[mid + 1]) {
-                float div = xArray[mid + 1] - xArray[mid];
-                float mull = (xArray[mid + 1] - x) / div;
-                float mulr = (x - xArray[mid]) / div;
-                float test = yArray[mid] * mull + yArray[mid + 1] * mulr;
+                //idx = (x - array[mid] < x - array[mid + 1]) ? mid : mid + 1;
+                T div = xArray[mid + 1] - xArray[mid];
+                T mull = (xArray[mid + 1] - x) / div;
+                T mulr = (x - xArray[mid]) / div;
+                T test = yArray[mid] * mull + yArray[mid + 1] * mulr;
                 //DBG(mull);
                 //DBG(mulr);
                 //DBG(mulr+mull);
@@ -251,83 +196,72 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
     return yArray[mid];
 }
 
-void Stage3::configure(double sampleRate) {
+void Stage3WithMatrix::configure(double sampleRate) {
     float T = static_cast<float>(1 / sampleRate);
     float h = static_cast<float>(2 * sampleRate);
 
     float R22 = 47000;
     float R33 = 6800;
     float R34 = 1000;
-    float R37; //PARAMETER
-    if (*this->odButton > 0.5) {
-        R37 = 50000.0f + 0.01f - *this->odParameter;
-    }
-    else {
-        R37 = 100000;
-    }
+    float R37 = 100000; //PARAMETER
     float C12 = 220e-9;
     float C18 = 470e-12;
     float E13 = 2.2e-6;
     float E14 = 2.2e-6;
+    
+    juce::dsp::Matrix<float> A(4, 4);
+    juce::dsp::Matrix<float> B(4, 1) ;
+    juce::dsp::Matrix<float> C(4, 1) ;
+    juce::dsp::Matrix<float> F(1, 1) ;
 
-    std::array<float, 16> A{ 0.0f };
-    std::array<float, 4> B{ 0.0f };
-    std::array<float, 4> C{ 0.0f };
-    float F;
 
+    A(0, 0) = -1 / (C12 * (R37 + R34)) - 1 / (C12 * R33);   
+    A(0, 1) = 0;
+    A(0, 2) = -1 / (C12 * (R37 + R34));
+    A(0, 3) = 0;
+    A(1, 0) = 1 / (C18 * (R37 + R34));
+    A(1, 1) = -1 / (R22 * C18);
+    A(1, 2) = 1 / (C18 * (R37 + R34));
+    A(1, 3) = 0;
+    A(2, 0) = -1 / (E13 * (R37 + R34));
+    A(2, 1) = 0;
+    A(2, 2) = -1 / (E13 * (R37 + R34));
+    A(2, 3) = 0;
+    A(3, 0) = 0;
+    A(3, 1) = 0;
+    A(3, 2) = 0;
+    A(3, 3) = 0;
 
-    A[0] = -1 / (C12 * (R37 + R34)) - 1 / (C12 * R33);
-    A[1] = 0;
-    A[2] = -1 / (C12 * (R37 + R34));
-    A[3] = 0;
-    A[4] = 1 / (C18 * (R37 + R34));
-    A[5] = -1 / (R22 * C18);
-    A[6] = 1 / (C18 * (R37 + R34));
-    A[7] = 0;
-    A[8] = -1 / (E13 * (R37 + R34));
-    A[9] = 0;
-    A[10] = -1 / (E13 * (R37 + R34));
-    A[11] = 0;
-    A[12] = 0;
-    A[13] = 0;
-    A[14] = 0;
-    A[15] = 0;
+    B(0, 0) = -1 / (C12 * (R37 + R34));
+    B(1, 0) = 1 / (C18 * (R37 + R34));
+    B(2, 0) = -1 / (E13 * (R37 + R34));
+    B(3, 0) = 0;
 
-    B[0] = -1 / (C12 * (R37 + R34));
-    B[1] = 1 / (C18 * (R37 + R34));
-    B[2] = -1 / (E13 * (R37 + R34));
-    B[3] = 0;
+    C(0, 0) = R37 / (C12 * (R37 + R34));
+    C(1, 0) = -R37 / (C18 * (R37 + R34));
+    C(2, 0) = R37 / (E13 * (R37 + R34));
+    C(3, 0) = -1 / E14;
 
-    C[0] = R37 / (C12 * (R37 + R34));
-    C[1] = -R37 / (C18 * (R37 + R34));
-    C[2] = R37 / (E13 * (R37 + R34));
-    C[3] = -1 / E14;
+    this->D(0, 0) = -R37 / (R37 + R34);
+    this->D(0, 1) = 1;
+    this->D(0, 2) = -R37 / (R37 + R34);
+    this->D(0, 3) = 1;
 
-    this->D[0] = -R37 / (R37 + R34);
-    this->D[1] = 1;
-    this->D[2] = -R37 / (R37 + R34);
-    this->D[3] = 1;
-
-    this->E = R34 / (R34 + R37);
-    F = -R34 * R37 / (R37 + R34);
-
-    std::array<float, 16> I = { h,0,0,0,0,h,0,0,0,0,h,0,0,0,0,h };
-    std::array<float, 16> IhmA{0};
-    std::array<float, 16> IhpA{0};
-    for (int i = 0; i < I.size(); i++) {
-        IhmA[i] = I[i] - A[i];
-        IhpA[i] = I[i] + A[i];
-    }
-    std::array<float, 16> inv{0};
-    gluInvertMatrix(IhmA, inv);
-
-    this->G = matrixMul(inv, C);
-    this->H = matrixMul(inv, IhpA);
-    this->J = matrixMul(inv, B);
-    this->K = matrixMul(this->D, this->G) + F;
+    this->E(0, 0) = R34 / (R34 + R37);
+    F(0, 0) = -R34 * R37 / (R37 + R34);
+    
+    juce::dsp::Matrix<float> I(juce::dsp::Matrix<float>::identity(4));
+    juce::dsp::Matrix<float> inv(4,4);
+    gluInvertMatrix(I * h - A, inv);
+    
+    this->G = inv * C;
+    this->H = inv * (I * h + A);
+    this->J = inv * B;
+    this->K = this->D * this->G + F;
 
     for (int i = 0; i < this->x.size(); i++) {
-        this->p[i] = (this->x[i] - this->K * this->y[i]);
+        juce::dsp::Matrix tmp(this->K * this->y[i]);
+        this->p[i] = (this->x[i] - tmp(0, 0));
     }
     /*DBG(G(0, 0));
     DBG(G(1, 0));
@@ -356,7 +290,7 @@ void Stage3::configure(double sampleRate) {
     DBG(H(3, 3));*/
 }
 
-void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>* odButton) {
+void Stage3WithMatrix::initParameters(std::atomic<float>* odParameter, std::atomic<float>* odButton) {
     this->odParameter = odParameter;
     this->odButton = odButton;
     /*juce::File file(juce::File::getCurrentWorkingDirectory().getChildFile("hc.txt"));
@@ -376,16 +310,19 @@ void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>*
     this->p.resize(this->x.size());
 }
 
-void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
+Stage3WithMatrix::Stage3WithMatrix() :Stage(), G(4, 1), H(4, 4), J(4, 1), D(1, 4), E(1, 1), K(1, 1), R35(2700.0f) {
+}
 
+void Stage3WithMatrix::processBlock(juce::AudioBuffer<float>& buffer) {
+    
     int channelNumber = buffer.getNumChannels();
     float array[4] = { 0,0,0,0 };
-    this->w.resize(channelNumber, std::array<float, 4>{0});
+    this->w.resize(channelNumber, juce::dsp::Matrix<float>(4, 1, array));
     this->yBuffer.resize(channelNumber, 0.f);
     this->uBuffer.resize(channelNumber, 0.f);
 
-    std::array<float, 4> pk{ 0 };
-    float p;
+    juce::dsp::Matrix<float> pk(4, 1);
+    juce::dsp::Matrix<float> p(1, 1);
 
     for (int channel = 0; channel < channelNumber; channel++) {
         auto channelSamples = buffer.getWritePointer(channel);
@@ -393,21 +330,14 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
             //ha tul sokszor kerem le a channelsamples[i]-t, akkor pattog
             //DBG(channelSamples[i]);
             float chnTmp = channelSamples[i];
-
-            std::array<float, 4> Hw = matrixMul(H, w[channel]);
-            std::array<float, 4> Ju = matrixMul(J, chnTmp + uBuffer[channel]);
-            std::array<float, 4> Gy = matrixMul(G, yBuffer[channel]);
-
-            pk = matrixAdd(matrixAdd(Hw, Ju), Gy);
-
-            p = matrixMul(D, pk) + E * chnTmp;
-            this->yBuffer[channel] = closestElementLinearInterpolate(p, this->p, this->y);
-            
-            Gy = matrixMul(G, yBuffer[channel]);
-            w[channel] = matrixAdd(Gy, pk);
-            this->uBuffer[channel] = chnTmp;
-            channelSamples[i] = w[channel][1] + w[channel][3] + channelSamples[i] - R35 * yBuffer[channel];
+            pk = H * w[channel] + J * (chnTmp + uBuffer[channel]) + G * yBuffer[channel];
+            p = D * pk + E * chnTmp; //valami baja van ezzel
+            this->yBuffer[channel] = closestElementLinearInterpolate<float>(p(0, 0), this->p, this->y);
+            //w[channel] = G * yBuffer[channel] + pk;
+            //this->uBuffer[channel] = chnTmp;
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //channelSamples[i] = w[channel](1, 0) + w[channel](3, 0) + channelSamples[i] - R35 * yBuffer[channel];
+            //DBG(p(0,0));
             //DBG(channelSamples[i]);
             //DBG("\n");
         }

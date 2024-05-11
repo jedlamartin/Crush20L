@@ -3,15 +3,15 @@
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 
-class Stage3 :public Stage {
+class Stage3WithMatrix :public Stage {
 private:
-	std::array<float, 4> G;
-	std::array<float, 16> H;
-	std::array<float, 4> J;
-	std::array<float, 4> D;
-	float E;
-	float K;
-	std::vector<std::array<float, 4>> w;
+	juce::dsp::Matrix<float> G;
+	juce::dsp::Matrix<float> H;
+	juce::dsp::Matrix<float> J;
+	juce::dsp::Matrix<float> D;
+	juce::dsp::Matrix<float> E;
+	juce::dsp::Matrix<float> K;
+	std::vector<juce::dsp::Matrix<float>> w;
 	std::vector<float> yBuffer;
 	std::vector<float> uBuffer;
 	std::vector<float> y;
@@ -22,6 +22,7 @@ private:
 	float R35;
 
 public:
+	Stage3WithMatrix();
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
 	void initParameters(std::atomic<float>* odParameter, std::atomic<float>* odButton);

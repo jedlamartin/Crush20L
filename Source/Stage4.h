@@ -10,6 +10,7 @@
 
 #pragma once
 #include "Stage.h"
+#include "CircularBuffer.hpp"
 
 class Stage4 :public Stage {
 private:
@@ -17,11 +18,10 @@ private:
 	std::atomic<float>* bassParameter = nullptr;
 	std::atomic<float>* midParameter = nullptr;
 	std::atomic<float>* trebleParameter = nullptr;
-	std::vector<std::array<float, 4>> yBuffer;
-	std::vector<std::array<float, 4>> uBuffer;
+	std::vector<CircularBuffer<float, 4>> yBuffer;
+	std::vector<CircularBuffer<float, 4>> uBuffer;
 public:
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
-	void initParameters(juce::AudioProcessorValueTreeState& vts);
-
+	void initParameters(std::atomic<float>* bassParameter, std::atomic<float>* midParameter, std::atomic<float>* trebleParameter);
 };

@@ -11,13 +11,33 @@
 #include <JuceHeader.h>
 #include "Stage1.h"
 #include "Stage2.h"
+#include "Stage3.h"
+#include "Stage3.h"
 #include "Stage4.h"
+#include "Stage5.h"
+#include "Stage6.h"
 
 //==============================================================================
 /**
 */
-class OrangeCrush20LAudioProcessor  : public juce::AudioProcessor
-{
+
+class ParameterAttachment : public juce::AudioProcessorValueTreeState::Listener {
+private:
+    Stage* stageToListenTo;
+    juce::AudioProcessor* processor;
+
+    void parameterChanged(const juce::String& parameterID, float newValue) override {
+        stageToListenTo->configure(processor->getSampleRate());
+    }
+
+public:
+    ParameterAttachment(Stage* stageToListenTo, juce::AudioProcessor* processor) : stageToListenTo(stageToListenTo), processor(processor) {};
+
+
+};
+
+
+class OrangeCrush20LAudioProcessor  : public juce::AudioProcessor{
 public:
     //==============================================================================
     OrangeCrush20LAudioProcessor();
@@ -56,12 +76,23 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    //==============================================================================
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
 private:
+
+
+
+
     juce::AudioProcessorValueTreeState parameters;
 
     Stage1 stage1;
     Stage2 stage2;
+    Stage3 stage3;
     Stage4 stage4;
+    Stage5 stage5;
+    Stage6 stage6;
+    ParameterAttachment stage2Attachment, stage3Attachment, stage4Attachment, stage5Attachment;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessor)
 };

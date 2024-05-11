@@ -7,6 +7,7 @@ private:
 	float A, B, C, D;
 	std::vector<std::array<float, 2>> yBuffer;
 	std::vector<std::array<float, 2>> uBuffer;
+	float maxTestInput, maxTestOutput;
 public:
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
