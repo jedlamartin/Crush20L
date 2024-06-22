@@ -28,7 +28,7 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
 
             this->yBuffer[channel][1] = this->yBuffer[channel][0];
             this->yBuffer[channel][0] = channelSamples[i];
-            this->uBuffer[channel][1] = this->uBuffer[channel][1];
+            this->uBuffer[channel][1] = this->uBuffer[channel][0];
             this->uBuffer[channel][0] = tmp;
 
 
@@ -39,8 +39,6 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
 
             this->yNegBuffer[channel] = channelSamples[i];
             this->uNegBuffer[channel] = tmp;
-
-
 
 
             tmp = channelSamples[i];
@@ -60,6 +58,9 @@ void Stage5::configure(double sampleRate){
     float T = static_cast<float>(1 / sampleRate);
     float V2 = *this->volParameter;
     float V1 = 50000.0f + 0.01f - V2;
+
+    testVol1 = V1;
+    testVol2 = V2;
 
     float G = 1 / (184467.44073709551616000000 * T * T + 8116.93632731367731603232 * T + 0.01623313478486440625);
     this->A = -(368934.88147419103232000000 * T * T - 0.03246626956972881250) * G;

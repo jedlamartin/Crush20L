@@ -11,6 +11,67 @@
 #include "PluginEditor.h"
 
 
+static std::array<std::vector<float>, 3> sinc;
+
+static void generateSinc(std::array<std::vector<float>, 3>& sinc, int N, double sampleRate) {
+    float T = static_cast <float>(1 / sampleRate);
+    float fs = static_cast<float> (sampleRate);
+    for (int i = -N; i <= N; i++) {
+        float n = static_cast<float>(i);
+        sinc[0].push_back(std::sin(juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 4.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 4.0f)));
+        sinc[1].push_back(std::sin(juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 2.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 2.0f)));
+        sinc[2].push_back(std::sin(juce::MathConstants<float>::pi * fs * T * (n + 3.0f / 4.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 3.0f / 4.0f)));
+    }
+}
+
+static juce::AudioBuffer<float> interpolate4X(const juce::AudioBuffer<float>& buffer, const std::array<std::vector<float>, 3>& sinc) {
+    int nRange = sinc[0].size();
+    int channelNumber = buffer.getNumChannels();
+    int sampleNumber = buffer.getNumSamples();
+    juce::AudioBuffer<float> retBuffer(channelNumber, sampleNumber * 4);
+    for (int channel = 0; channel < channelNumber; channel++) {
+        const float* from = buffer.getReadPointer(channel);
+        float* to = retBuffer.getWritePointer(channel);
+        for (int i = 0; i < sampleNumber; i++) {
+            to[i * 4] = from[i];
+            //to[i * 4] = 0;
+
+            to[i * 4 + 1] = 0.0f;
+            to[i * 4 + 2] = 0.0f;
+            to[i * 4 + 3] = 0.0f;
+        }
+
+        for (int l = 0; l < sampleNumber * 4; l++) {
+            if (l % 4 != 0) {
+                int fromI = juce::jmax<int>(-nRange / 2, l / 4 - sampleNumber);
+                int toI = juce::jmin<int>(nRange / 2, l / 4);
+                for (int n = fromI; n <= toI; n++) {
+           
+                    float add = sinc[l % 4 - 1][n + nRange / 2] * from[l / 4 - n];
+                    to[l] += add;
+                }
+                //DBG('\n');
+                //DBG(to[l]);
+                //DBG('\n');
+            }
+        }
+    }
+    return retBuffer;
+}
+
+static juce::AudioBuffer<float> decimate4X(const juce::AudioBuffer<float>& buffer) {
+    int channelNumber = buffer.getNumChannels();
+    int sampleNumber = buffer.getNumSamples();
+    juce::AudioBuffer<float> retBuffer(channelNumber, sampleNumber / 4);
+    for (int channel = 0; channel < channelNumber; channel++) {
+        const float* from = buffer.getReadPointer(channel);
+        float* to = retBuffer.getWritePointer(channel);
+        for (int i = 0; i < sampleNumber / 4; i++) {
+            to[i] = from[i * 4];
+        }
+    }
+    return retBuffer;
+}
 
 static void divBuffer(juce::AudioBuffer<float>& buffer, float div) {
     for (auto channel = 0; channel < buffer.getNumChannels(); channel++) {
@@ -41,7 +102,7 @@ parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParam
 {
     //Stage2
     this->stage2.initParameters(parameters);
-    //this->parameters.addParameterListener("gain", &stage2Attachment);
+    this->parameters.addParameterListener("gain", &stage2Attachment);
 
     //Stage3
     this->stage3.initParameters(parameters.getRawParameterValue("od"), parameters.getRawParameterValue("odButton"));
@@ -131,8 +192,14 @@ void OrangeCrush20LAudioProcessor::prepareToPlay (double sampleRate, int samples
     this->stage2.configure(sampleRate);
     this->stage3.configure(sampleRate);
     this->stage4.configure(sampleRate);
+    //this->stage4.resetParameters(sampleRate);
     this->stage5.configure(sampleRate);
     this->stage6.configure(sampleRate);
+    //sinc[0].clear();
+    //sinc[1].clear();
+    //sinc[2].clear();
+    //generateSinc(sinc, 5, sampleRate);
+    //this->reSample.configure(sampleRate);
 }
 
 void OrangeCrush20LAudioProcessor::releaseResources()
@@ -189,15 +256,49 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
+    //a buffer adatai egy fontos mem cimen vannak, ahonnan nem szabad reallokalni az adatokat
+
 
     // Stage 1
+    /*juce::AudioBuffer<float> tmp(buffer.getNumChannels(), buffer.getNumSamples() * 4);
+    
     stage1.processBlock(buffer);
-    //stage2.processBlock(buffer);
+    //DBG(buffer.getSample(0, 1));
+    tmp.makeCopyOf(interpolate4X(buffer, sinc), true);
+    stage2.processBlock(tmp);
+    stage3.processBlock(tmp);
+    //szuro
+    buffer.makeCopyOf(decimate4X(tmp), true);
+    
+
+    //stage2.processBlock(buffer); ezek nem kellenek csak
+    //stage3.processBlock(buffer);
+    
+
+    stage4.processBlock(buffer);
+    stage5.processBlock(buffer);
+    stage6.processBlock(buffer);
+    divBuffer(buffer, 560.0f);*/
+    
+    //DBG(*buffer.getReadPointer(0));
+    
+
+    //this->reSample.interpolate(buffer);
+    //this->reSample.decimate(buffer);
+    
+    //juce::AudioBuffer<float> test(interpolate4X(buffer, sinc));
+    //this->reSample.getBuffer().makeCopyOf(test);
+    //this->reSample.decimate(buffer);
+    //DBG(*buffer.getReadPointer(0));
+    //DBG('\n');
+    divBuffer(buffer, 0.05f);
+    stage1.processBlock(buffer);
+    stage2.processBlock(buffer);
     stage3.processBlock(buffer);
     stage4.processBlock(buffer);
     stage5.processBlock(buffer);
     stage6.processBlock(buffer);
-    divBuffer(buffer, 560.0f);
+    divBuffer(buffer, 48.0f);
 }
 
 //==============================================================================
@@ -243,7 +344,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrangeCrush20LAudioProcessor
     std::make_unique<juce::AudioParameterFloat>("treble", "Treble", juce::NormalisableRange<float>(0.01f, 250000.0f, 10.0f, 0.3f), 25000.0f),
     std::make_unique<juce::AudioParameterFloat>("od", "Overdrive", juce::NormalisableRange<float>(0.01f, 50000.0f, 2.0f, 6.58f), 0.01f),
     std::make_unique<juce::AudioParameterBool>("odButton", "Overdrive Button", false),
-    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 2.0f, 0.3f), 0.0f)
+    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 2.0f, 0.3f), 0.01f)
     };
     return vtsParameterLayout;
 }

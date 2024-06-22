@@ -1,43 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="tKwdRy" name="OrangeCrush20L" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="tKwdRy" name="OrangeCrush20L" projectType="audioplug" useAppConfig="1"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="zero" pluginFormats="buildAU,buildStandalone,buildVST3"
               headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
+    <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="r81CXj" name="background.png" compile="0" resource="1" file="Assets/background.png"/>
+      <FILE id="Bp4nnP" name="crush20l256.png" compile="0" resource="1" file="Assets/crush20l256.png"/>
+      <FILE id="xkKGuo" name="hc.txt" compile="0" resource="1" file="Assets/hc.txt"/>
+      <FILE id="tzZa5a" name="hc1.txt" compile="0" resource="1" file="Assets/hc1.txt"/>
+      <FILE id="c5ZNWb" name="hc10.txt" compile="0" resource="1" file="Assets/hc10.txt"/>
+      <FILE id="m2VYwR" name="hc500.txt" compile="0" resource="1" file="Assets/hc500.txt"/>
+    </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
-      <FILE id="FfOBLe" name="Stage1.cpp" compile="1" resource="0" file="Source/Stage1.cpp"/>
-      <FILE id="xHVBEt" name="Stage4.cpp" compile="1" resource="0" file="Source/Stage4.cpp"/>
-      <FILE id="dxDl3D" name="Stage5.cpp" compile="1" resource="0" file="Source/Stage5.cpp"/>
-      <FILE id="pp8FPs" name="Stage5.h" compile="0" resource="0" file="Source/Stage5.h"/>
-      <FILE id="wLIKXk" name="Stage4.h" compile="0" resource="0" file="Source/Stage4.h"/>
-      <FILE id="DBkPEM" name="Stage3.cpp" compile="1" resource="0" file="Source/Stage3.cpp"/>
-      <FILE id="iwNFLt" name="Stage3.h" compile="0" resource="0" file="Source/Stage3.h"/>
-      <FILE id="PM240Q" name="Stage1.h" compile="0" resource="0" file="Source/Stage1.h"/>
+      <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
+            file="Source/CircularBuffer.hpp"/>
+      <FILE id="KsVqei" name="ReSample.hpp" compile="0" resource="0" file="Source/ReSample.hpp"/>
       <FILE id="me618P" name="Stage.h" compile="0" resource="0" file="Source/Stage.h"/>
       <FILE id="FTvIUv" name="Stage.cpp" compile="1" resource="0" file="Source/Stage.cpp"/>
+      <FILE id="PM240Q" name="Stage1.h" compile="0" resource="0" file="Source/Stage1.h"/>
+      <FILE id="FfOBLe" name="Stage1.cpp" compile="1" resource="0" file="Source/Stage1.cpp"/>
+      <FILE id="uLYF89" name="Stage2.h" compile="0" resource="0" file="Source/Stage2.h"/>
+      <FILE id="nsuefZ" name="Stage2.cpp" compile="1" resource="0" file="Source/Stage2.cpp"/>
+      <FILE id="iwNFLt" name="Stage3.h" compile="0" resource="0" file="Source/Stage3.h"/>
+      <FILE id="DBkPEM" name="Stage3.cpp" compile="1" resource="0" file="Source/Stage3.cpp"/>
+      <FILE id="wLIKXk" name="Stage4.h" compile="0" resource="0" file="Source/Stage4.h"/>
+      <FILE id="xHVBEt" name="Stage4.cpp" compile="1" resource="0" file="Source/Stage4.cpp"/>
+      <FILE id="pp8FPs" name="Stage5.h" compile="0" resource="0" file="Source/Stage5.h"/>
+      <FILE id="dxDl3D" name="Stage5.cpp" compile="1" resource="0" file="Source/Stage5.cpp"/>
+      <FILE id="AEKSlq" name="Stage6.h" compile="0" resource="0" file="Source/Stage6.h"/>
+      <FILE id="UGBPCe" name="Stage6.cpp" compile="1" resource="0" file="Source/Stage6.cpp"/>
       <FILE id="Gp146N" name="Stage3WithMatrix.cpp" compile="1" resource="0"
             file="Source/Stage3WithMatrix.cpp"/>
       <FILE id="f02RDO" name="Stage3WithMatrix.h" compile="0" resource="0"
             file="Source/Stage3WithMatrix.h"/>
-      <FILE id="nsuefZ" name="Stage2.cpp" compile="1" resource="0" file="Source/Stage2.cpp"/>
-      <FILE id="uLYF89" name="Stage2.h" compile="0" resource="0" file="Source/Stage2.h"/>
-      <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
-            file="Source/CircularBuffer.hpp"/>
-      <FILE id="UGBPCe" name="Stage6.cpp" compile="1" resource="0" file="Source/Stage6.cpp"/>
-      <FILE id="AEKSlq" name="Stage6.h" compile="0" resource="0" file="Source/Stage6.h"/>
-      <FILE id="s13cPF" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
       <FILE id="KnHWPP" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="s13cPF" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="nGRzd6" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="teizyt" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="nGRzd6" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
-    <FILE id="Y3b33g" name="hc.txt" compile="0" resource="1" file="Builds/VisualStudio2022/hc.txt"/>
-    <FILE id="SwEO5M" name="hc1.txt" compile="0" resource="1" file="Builds/VisualStudio2022/hc1.txt"/>
-    <FILE id="YplecR" name="hc10.txt" compile="0" resource="1" file="Builds/VisualStudio2022/hc10.txt"/>
-    <FILE id="cKS60P" name="hc500.txt" compile="0" resource="1" file="Builds/VisualStudio2022/hc500.txt"/>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

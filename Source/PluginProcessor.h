@@ -12,10 +12,11 @@
 #include "Stage1.h"
 #include "Stage2.h"
 #include "Stage3.h"
-#include "Stage3.h"
 #include "Stage4.h"
 #include "Stage5.h"
 #include "Stage6.h"
+#include "ReSample.hpp"
+
 
 //==============================================================================
 /**
@@ -85,6 +86,8 @@ private:
 
 
     juce::AudioProcessorValueTreeState parameters;
+
+    ReSample<15> reSample;
 
     Stage1 stage1;
     Stage2 stage2;

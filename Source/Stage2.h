@@ -13,7 +13,6 @@ private:
 	std::vector<float> yRCBuffer;
 	std::vector<float> uRCBuffer;
 	float cutOffVoltage;
-	float maxTestInput, maxTestOutput;
 
 public:
 	void processBlock(juce::AudioBuffer<float>& buffer) override;

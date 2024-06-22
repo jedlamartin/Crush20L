@@ -24,6 +24,8 @@ private:
     std::vector<std::array<float, 2>> yVolBuffer;
     std::vector<std::array<float, 2>> uVolBuffer;
     std::atomic<float>* volParameter = nullptr;
+    float testVol1;
+    float testVol2;
 public:
     void processBlock(juce::AudioBuffer<float>& buffer) override;
     void configure(double sampleRate) override;

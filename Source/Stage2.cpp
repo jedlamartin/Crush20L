@@ -21,18 +21,11 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
     for (auto channel = 0; channel < channelNumber; channel++) {
         float* channelSamples = buffer.getWritePointer(channel);
         for (int i = 0; i < buffer.getNumSamples(); i++) {
-            //channelSamples[i] /= 10;
-            //DBG(channelSamples[i]);
             float tmp = channelSamples[i];
-            if (maxTestInput < tmp) {
-                maxTestInput = tmp;
-            }
-            channelSamples[i] = A * yBuffer[channel][0] + B * yBuffer[channel][1] + C * channelSamples[i] + D * uBuffer[channel][0] + uBuffer[channel][1];
+            channelSamples[i] = A * yBuffer[channel][0] + B * yBuffer[channel][1] + C * channelSamples[i] + D * uBuffer[channel][0] + E * uBuffer[channel][1];
             
-            /*
-
+            //Cutoff
             if (channelSamples[i] > this->cutOffVoltage) {
-                //u[k]=(y[k]-Ay[k-1]-By[k-2]-Du[k-1]-Eu[k-2])/C
                 channelSamples[i] = this->cutOffVoltage;
                 tmp = (this->cutOffVoltage - A * yBuffer[channel][0] - B * yBuffer[channel][1] - D * uBuffer[channel][0] - E * uBuffer[channel][1]) / C;
             }
@@ -40,12 +33,7 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
                 channelSamples[i] = -this->cutOffVoltage;
                 tmp = (-this->cutOffVoltage - A * yBuffer[channel][0] - B * yBuffer[channel][1] - D * uBuffer[channel][0] - E * uBuffer[channel][1]) / C;
             }
-            //DBG(channelSamples[i]);
-            //DBG("\n");
 
-            */
-
-            //korforgo
             this->yBuffer[channel][1] = this->yBuffer[channel][0];
             this->yBuffer[channel][0] = channelSamples[i];
 
@@ -60,9 +48,6 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             this->yRCBuffer[channel] = channelSamples[i];
             this->uRCBuffer[channel] = tmp;
 
-            if (maxTestOutput < channelSamples[i]) {
-                maxTestOutput = channelSamples[i];
-            }
         }
     }
 }
@@ -71,9 +56,6 @@ void Stage2::configure(double sampleRate) {
     float T = 1 / sampleRate;
     float G2 = *this->gainParameter;
     float G1 = 10000.01f - G2;
-    //30
-    //float G1 = 10000;
-    //float G2 = 0.01;
 
     float G = 1 / (20291.894071046987289160560623360875 * G1 + 151796712417.358253480438885062842882457600 * T + 30437841.106570480933740840935041312500 + 22300745198530.623141535718272648361505980416 * T * T + 98123278.873534746827226483276371722240 * G1 * T);
     this-> A = -(-60875682.213140961867481681870082625000 - 40583.788142093974578321121246721750 * G1 + 44601490397061.246283071436545296723011960832 * T * T) * G;

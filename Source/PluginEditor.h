@@ -15,19 +15,24 @@
 /**
 */
 
-class LookAndFeel :public juce::LookAndFeel_V4 {
+class MyLookAndFeel :public juce::LookAndFeel_V4 {
+private:
+    juce::Image knobImage;
+    int knobFrames;
+    int knobSize;
 public:
-    //void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
+    MyLookAndFeel();
+    void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
 };
 
 class Knob :public juce::Slider {
 private:
-    juce::RangedAudioParameter* param; //https://forum.juce.com/t/getrawparametervalue-vs-getparameter/38395
-    LookAndFeel lookAndFeel;
+    //juce::RangedAudioParameter* param; //https://forum.juce.com/t/getrawparametervalue-vs-getparameter/38395
+    MyLookAndFeel lookAndFeel;
 public:
-    Knob(juce::RangedAudioParameter& param);
-    //void paint(juce::Graphics& g) override;
-
+    Knob();
+    void paint(juce::Graphics& g) override;
+    ~Knob();
 };
 
 
@@ -47,27 +52,29 @@ private:
     OrangeCrush20LAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
 
-    juce::Slider gainSlider;
+    juce::Image backgound;
+
+    Knob gainSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
-    juce::Slider bassSlider;
+    Knob bassSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassAttachment;
 
 
-    juce::Slider midSlider;
+    Knob midSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> midAttachment;
 
 
-    juce::Slider trebleSlider;
+    Knob trebleSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trebleAttachment;
 
-    juce::Slider odSlider;
+    Knob odSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> odAttachment;
 
     juce::ToggleButton odButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> odButtonAttachment;
 
-    juce::Slider volSlider;
+    Knob volSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volAttachment;
 
 
