@@ -35,6 +35,10 @@ public:
     ~Knob();
 };
 
+class ToggleSwitch : public juce::ImageButton {
+public:
+    ToggleSwitch();
+};
 
 
 class OrangeCrush20LAudioProcessorEditor  : public juce::AudioProcessorEditor {
@@ -52,7 +56,7 @@ private:
     OrangeCrush20LAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
 
-    juce::Image backgound;
+    juce::Image background;
 
     Knob gainSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
@@ -77,6 +81,8 @@ private:
     Knob volSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volAttachment;
 
+    ToggleSwitch powerButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerButtonAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessorEditor)
 };

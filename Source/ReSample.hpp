@@ -15,98 +15,135 @@
 #include <JuceHeader.h>
 #include <cmath>
 
-template <size_t N>
+template <int iSize, int N>
+class sincArray {
+private:
+    std::array<float, (N + 1) * iSize> sinc;
+public:
+    sincArray() :sinc{ 0 } {}
+
+    float& operator[](int i) {
+        //int index = i < 0 ? -i + 1 : i;
+        return sinc[i < 0 ? -i - 1 : i];
+    }
+
+    float& operator()(int i, int delta) {
+        if (i < 0)
+            return (*this)[(-i) * iSize - delta];;
+        return (*this)[i * iSize + delta];
+
+    }
+
+    void configure(float sampleRate) {
+        float fc = sampleRate / 2;
+        float T = 1 / sampleRate;
+        for (int i = 0; i <= N; i++) {
+            for (int delta = 0; delta < iSize; delta++) {
+                float index = static_cast<float>(i) + 1 / static_cast<float>(iSize) * static_cast<float>(delta);
+                (*this)(i, delta) = std::sin(2.0f * juce::MathConstants<float>::pi * fc * index * T) / (2.0f * juce::MathConstants<float>::pi * fc * index * T);
+            }
+        }
+        (*this)[0] = 1;
+    }
+
+    size_t size() const {
+        return this->sinc.size();
+    }
+};
+
+template <size_t iSize, size_t N>
 
 class ReSample {
 private:
-    std::array<float, (N * 2 + 1) * 4> sinc;
-    std::vector<CircularBuffer<float, N>> IPBuffer;
-    std::vector<CircularBuffer<float, N * 4>> DMBuffer;
-    juce::AudioBuffer<float> IPAudioBuffer;
+    sincArray<iSize, N> sinc;
+    juce::AudioBuffer<float> interpolatedBuf;
+    std::vector<CircularBuffer<float, N>> beginBuf, endBuf;
+    std::vector<CircularBuffer<float, N>> decBeginBuf, decEndBuf;
 
 public:
-    ReSample() :sinc{ 0 } {};
-    juce::AudioBuffer<float>& getBuffer() {
-        return this->IPAudioBuffer;
+    void configure(double sampleRate){
+        sinc.configure(static_cast<float>(sampleRate));
     }
-    void configure(double sampleRate) {
-        float T = static_cast <float>(1 / sampleRate);
-        float fs = static_cast<float> (sampleRate);
-        int i = 0;
-        float n = -static_cast<float>(N);
-        while (i < N * 2 + 1) {
-            sinc[i * 4] = std::sin(juce::MathConstants<float>::pi * fs * T * n) / (juce::MathConstants<float>::pi * fs * T * n);
-            sinc[i * 4 + 1] = std::sin(juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 4.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 4.0f));
-            sinc[i * 4 + 2] = std::sin(juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 2.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 1.0f / 2.0f));
-            sinc[i * 4 + 3] = std::sin(juce::MathConstants<float>::pi * fs * T * (n + 3.0f / 4.0f)) / (juce::MathConstants<float>::pi * fs * T * (n + 3.0f / 4.0f));
-            i++;
-            n++;
-        }
-        sinc[4 * N] = 1;
-    }
-    void interpolate(const juce::AudioBuffer<float>& buffer) {
-        int intN = static_cast<int>(N);
-        int channelNumber = buffer.getNumChannels();
-        int sampleNumber = buffer.getNumSamples();
-        this->IPAudioBuffer.setSize(channelNumber, sampleNumber * 4, false, true, true);
-        this->IPBuffer.resize(channelNumber, CircularBuffer<float, N>(0));
-
-
-        for (int channel = 0; channel < channelNumber; channel++) {
-            const float* from = buffer.getReadPointer(channel);
-            float* to = this->IPAudioBuffer.getWritePointer(channel);
-
-            for (int l = 0; l < sampleNumber * 4; l++) {
-                int delta = l % 4;
-                if (delta != 0) {
-                    to[l] = 0;
-                    int fromI = juce::jmax<int>(-intN, l / 4 - sampleNumber);
-                    for (int n = fromI; n <= 0; n++) {
-                        to[l] += sinc[(n + intN) * 4 + delta] * from[l / 4 - n];
-                    }
-
-                    for (int n = 1; n <= intN; n++) {
-                        to[l] += sinc[(n + intN) * 4 + delta] * IPBuffer[channel][n - 1];
-                    }
-
-                }
-                else {
-                    to[l] = from[l / 4];
-                    this->IPBuffer[channel].push(from[l / 4]);
-                }
+    void interpolate(juce::AudioBuffer<float>& buffer) {
+        int channelSize = buffer.getNumChannels();
+        int oBufSize = buffer.getNumSamples();
+        int iBufSize = oBufSize * iSize;
+        beginBuf.resize(channelSize, CircularBuffer<float, N>(0));
+        endBuf.resize(channelSize, CircularBuffer<float, N>(0));
+        juce::AudioBuffer<float> x(channelSize, buffer.getNumSamples() + N);
+        for (int channel = 0; channel < channelSize; channel++) {
+            x.copyFrom(channel, N, buffer, channel, 0, buffer.getNumSamples());
+            float* currentSample = x.getWritePointer(channel);
+            for (int i = 0; i < N; i++) {
+                currentSample[i] = endBuf[channel][i];
             }
         }
+
+        /*DBG("\nX=");
+        for (int i = 0; i < x.getNumSamples(); i++) {
+            float* sample = x.getWritePointer(0);
+            DBG(sample[i]);
+        }*/
+
+        //eddig megvan
+        interpolatedBuf.setSize(channelSize, iBufSize, false, false, false);
+        for (int channel = 0; channel < channelSize; channel++) {
+            float const* channelSamples = x.getReadPointer(channel);
+            float* iSamples = interpolatedBuf.getWritePointer(channel);
+            //bevart mintak
+            //az elsot automatikusan kitoltjuk, hogy a buffereles jo legyen
+            *iSamples = *channelSamples;
+            for (int k = 1; k < iBufSize; k++) {
+                int delta = k % 4;
+                int chI = k / 4;
+                if (delta != 0) {
+                    iSamples[k] = 0;
+                    //mintakbol
+                    for (int n = -N; n <= 0; n++) {
+                        iSamples[k] += this->sinc(n, delta) * channelSamples[chI-n];
+                    }
+                    //bufferbol
+                    for (int n = 1; n <= N; n++) {
+                        iSamples[k] += this->sinc(n, delta) * beginBuf[channel][n - 1];
+                    }
+                }
+                else {
+                    iSamples[k] = channelSamples[chI];
+                    beginBuf[channel].push(channelSamples[chI-1]);
+
+                }
+            }
+            //endbuf feltoltese ha kesz minden
+            for (int i = 0; i < N; i++) {
+                //DBG(x.getNumSamples());
+                //DBG(buffer.getNumSamples());
+                //DBG(channelSamples[channelSize - 1 + i]);
+                endBuf[channel].push(channelSamples[oBufSize - 1 + i]);
+            }
+            //DBG("\n\n");
+        }
+
 
     }
     void decimate(juce::AudioBuffer<float>& buffer) {
-        int intN = static_cast<int>(N);
-        int channelNumber = buffer.getNumChannels();
-        int sampleNumber = buffer.getNumSamples();
-        this->DMBuffer.resize(channelNumber, CircularBuffer<float, N * 4>(0));
+        int channelSize = buffer.getNumChannels();
+        int oBufSize = buffer.getNumSamples();
+        int iBufSize = this->interpolatedBuf.getNumSamples();
+        decBeginBuf.resize(channelSize, CircularBuffer<float, N>(0));
 
-
-        for (int channel = 0; channel < channelNumber; channel++) {
-            const float* from = this->IPAudioBuffer.getReadPointer(channel);
-            float* to = buffer.getWritePointer(channel);
-            for (int l = 0; l < sampleNumber; l++) {
-                to[l] = 0;
-
-                int fromI = juce::jmax<int>(-intN * 4, l - sampleNumber);
-                for (int n = fromI; n <= 0; n++) {
-                    to[l] += sinc[n + 4 * intN] * from[l * 4 - n];
-                }
-
-                for (int n = 1; n <= intN * 4; n++) {
-                    to[l] += sinc[n + 4 * intN] * DMBuffer[channel][n - 1];
-                }
-
-                for (int i = 1; i <= intN; i++) {
-                    DMBuffer[channel].push(from[l * 4 + i]);
+        for (int channel = 0; channel < channelSize; channel++) {
+            float const* iSamples = interpolatedBuf.getReadPointer(channel);
+            float* samples = buffer.getWritePointer(channel);
+            for (int k = 0; k < oBufSize; k++) {
+                samples[k] = 0;
+                int index = 4 * k; //hogy a faszba szerezzek még annyi mintát amennyi kell? elvileg már megszereztem, de hogy kezeljem ezt
+                for (int n = -N; n <= 0; n++) {
+                    samples[k] += sinc[n] * iSamples[index - n];
                 }
             }
         }
     }
-
+    
 };
 
 

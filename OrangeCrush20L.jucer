@@ -6,6 +6,10 @@
               headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="SjzooW" name="powerswitch_off.png" compile="0" resource="1"
+            file="Assets/powerswitch_off.png"/>
+      <FILE id="B8viRp" name="powerswitch_on.png" compile="0" resource="1"
+            file="Assets/powerswitch_on.png"/>
       <FILE id="r81CXj" name="background.png" compile="0" resource="1" file="Assets/background.png"/>
       <FILE id="Bp4nnP" name="crush20l256.png" compile="0" resource="1" file="Assets/crush20l256.png"/>
       <FILE id="xkKGuo" name="hc.txt" compile="0" resource="1" file="Assets/hc.txt"/>

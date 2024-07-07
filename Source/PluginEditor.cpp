@@ -15,7 +15,7 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts)
 
 {
-    this->backgound = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
+    this->background = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
 
     this->addAndMakeVisible(gainSlider);
     gainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "gain", gainSlider));
@@ -38,8 +38,18 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     this->addAndMakeVisible(volSlider);
     volAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "vol", volSlider));
 
-
-    
+    this->addAndMakeVisible(powerButton);
+    powerButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "power", powerButton));
+    powerButton.onClick = [this]() {
+        if (this->powerButton.getToggleState()) {
+            this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+            this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+        }
+        else{
+            this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+            this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+        }
+        };
     setSize (1000, 350);
 
 }
@@ -52,14 +62,14 @@ OrangeCrush20LAudioProcessorEditor::~OrangeCrush20LAudioProcessorEditor()
 void OrangeCrush20LAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    if (this->backgound.isValid()) {
-        g.drawImage(this->backgound, this->getLocalBounds().toFloat(), juce::RectanglePlacement::onlyReduceInSize | juce::RectanglePlacement::stretchToFit);
+    if (this->background.isValid()) {
+        g.drawImage(this->background, this->getLocalBounds().toFloat(), juce::RectanglePlacement::onlyReduceInSize | juce::RectanglePlacement::stretchToFit);
     }
     else {
         g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     }
 
-
+    g.drawRect(this->powerButton.getBounds());
 }
 
 void OrangeCrush20LAudioProcessorEditor::resized()
@@ -71,6 +81,7 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->odSlider.setBounds(636, 177, 60, 60);
     this->odButton.setBounds(400, 100, 60, 60);
     this->volSlider.setBounds(292, 172, 70, 70);
+    this->powerButton.setBounds(100, 172, 50, 50);
 }
 
 Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
@@ -103,4 +114,8 @@ void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
         g.drawFittedText("No image", x, y, width, height, juce::Justification::horizontallyCentred | juce::Justification::centred, 1);
     }
 
+}
+
+ToggleSwitch::ToggleSwitch():juce::ImageButton(){
+    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
 }
