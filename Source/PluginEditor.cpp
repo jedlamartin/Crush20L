@@ -40,14 +40,17 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
 
     this->addAndMakeVisible(powerButton);
     powerButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "power", powerButton));
+    powerButton.setClickingTogglesState(true);
     powerButton.onClick = [this]() {
-        if (this->powerButton.getToggleState()) {
-            this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+        if (!this->powerButton.getToggleState()) {
+            //this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
             this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+            this->powerButton.repaint();
         }
         else{
-            this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+            //this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
             this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+            this->powerButton.repaint();
         }
         };
     setSize (1000, 350);
@@ -117,5 +120,6 @@ void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
 }
 
 ToggleSwitch::ToggleSwitch():juce::ImageButton(){
+    //this->setState(juce::Button::ButtonState::buttonDown);
     this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
 }

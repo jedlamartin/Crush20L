@@ -13,6 +13,7 @@ private:
 	std::vector<float> yRCBuffer;
 	std::vector<float> uRCBuffer;
 	float cutOffVoltage;
+	juce::CriticalSection processLock;
 
 public:
 	void processBlock(juce::AudioBuffer<float>& buffer) override;

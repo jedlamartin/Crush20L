@@ -11,14 +11,6 @@
 #include "PluginEditor.h"
 
 
-static void divBuffer(juce::AudioBuffer<float>& buffer, float div) {
-    for (auto channel = 0; channel < buffer.getNumChannels(); channel++) {
-        float* channelSamples = buffer.getWritePointer(channel);
-        for (int i = 0; i < buffer.getNumSamples(); i++) {
-            channelSamples[i] = channelSamples[i] / div;
-        }
-    }
-}
 
 
 //==============================================================================
@@ -132,7 +124,6 @@ void OrangeCrush20LAudioProcessor::prepareToPlay (double sampleRate, int samples
     this->stage2.configure(sampleRate);
     this->stage3.configure(sampleRate);
     this->stage4.configure(sampleRate);
-    //this->stage4.resetParameters(sampleRate);
     this->stage5.configure(sampleRate);
     this->stage6.configure(sampleRate);
 }
@@ -195,7 +186,7 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
-        divBuffer(buffer, 0.05f);
+        buffer.applyGain(20.0f);
         stage1.processBlock(buffer);
         resample.interpolate(buffer);
         stage2.processBlock(buffer);
@@ -203,7 +194,7 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         stage4.processBlock(buffer);
         stage5.processBlock(buffer);
         stage6.processBlock(buffer);
-        divBuffer(buffer, 48.0f);
+        buffer.applyGain(0.02f);
     }
 }
 

@@ -20,6 +20,8 @@ private:
 	std::atomic<float>* odParameter = nullptr;
 	std::atomic<float>* odButton = nullptr;
 	float R35;
+	juce::CriticalSection processLock;
+
 
 public:
 	void processBlock(juce::AudioBuffer<float>& buffer) override;

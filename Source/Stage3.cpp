@@ -242,6 +242,9 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
 }
 
 void Stage3::configure(double sampleRate) {
+
+    const juce::ScopedLock lock(this->processLock);
+
     float T = static_cast<float>(1 / sampleRate);
     float h = static_cast<float>(2 * sampleRate);
 
@@ -332,6 +335,9 @@ void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>*
 }
 
 void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
+
+    const juce::ScopedLock lock(this->processLock);
+
 
     int channelNumber = buffer.getNumChannels();
     float array[4] = { 0,0,0,0 };

@@ -12,6 +12,8 @@
 
 void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 {
+    const juce::ScopedLock lock(this->processLock);
+
     int channelNumber = buffer.getNumChannels();
     this->yBuffer.resize(channelNumber, std::array<float, 2>{0, 0});
     this->uBuffer.resize(channelNumber, std::array<float, 2>{0, 0});
@@ -53,6 +55,8 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 }
 
 void Stage2::configure(double sampleRate) {
+    const juce::ScopedLock lock(this->processLock);
+
     float T = 1 / sampleRate;
     float G2 = *this->gainParameter;
     float G1 = 10000.01f - G2;
@@ -70,6 +74,11 @@ void Stage2::configure(double sampleRate) {
     this->G = (1043170.756065904715625 * G2) * G;
     this->H = (-1043170.756065904715625 * G2) * G;
 
+    this->uBuffer.clear();
+    this->yBuffer.clear();
+
+    this->uRCBuffer.clear();
+    this->yRCBuffer.clear();
 }
 
 void Stage2::initParameters(juce::AudioProcessorValueTreeState& vts) {

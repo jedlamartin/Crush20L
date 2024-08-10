@@ -11,6 +11,9 @@
 #include "Stage5.h"
 
 void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
+
+    const juce::ScopedLock lock(this->processLock);
+
     //y[k]=Ay[k-1]+By[k-2]+Cy[k-3]+Dy[k-4]+Eu[k]+Fu[k-1]...
     int channelNumber = buffer.getNumChannels();
     this->yBuffer.resize(channelNumber, std::array<float, 2>{0.0f});
@@ -55,12 +58,13 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
 
 
 void Stage5::configure(double sampleRate){
+
+    const juce::ScopedLock lock(this->processLock);
+
     float T = static_cast<float>(1 / sampleRate);
     float V2 = *this->volParameter;
     float V1 = 50000.0f + 0.01f - V2;
 
-    testVol1 = V1;
-    testVol2 = V2;
 
     float G = 1 / (184467.44073709551616000000 * T * T + 8116.93632731367731603232 * T + 0.01623313478486440625);
     this->A = -(368934.88147419103232000000 * T * T - 0.03246626956972881250) * G;

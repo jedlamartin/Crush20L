@@ -37,6 +37,7 @@ void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
 }
 
 void Stage6::configure(double sampleRate){
+
     float T = static_cast<float>(1 / sampleRate);
 
     float G = 1 / (517 + 25000 * T);

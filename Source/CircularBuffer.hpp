@@ -19,6 +19,7 @@ public:
     CircularBuffer(const T& initValue);
     void push(const T& element);
     T& operator[](size_t index);
+    void clear();
 };
 
 template<class T, size_t size>
@@ -37,4 +38,10 @@ inline void CircularBuffer<T, size>::push(const T& element) {
 template<class T, size_t size>
 inline T& CircularBuffer<T, size>::operator[](size_t index) {
     return this->buf[(this->oldestIndex - index - 1 + size) % size];
+}
+
+template<class T, size_t size>
+inline void CircularBuffer<T, size>::clear(){
+    memset(this->buf, T(0), size);
+    this->oldestIndex = 0;
 }
