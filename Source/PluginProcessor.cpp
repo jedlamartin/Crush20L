@@ -11,6 +11,16 @@
 #include "PluginEditor.h"
 
 
+static void decimate(juce::AudioBuffer<float>& from, juce::AudioBuffer<float>& to) {
+    for (int channel = 0; channel < from.getNumChannels(); channel++) {
+        float const* fromPtr = from.getReadPointer(channel);
+        float* toPtr = to.getWritePointer(channel);
+        for (int i = 0; i < to.getNumSamples(); i++) {
+            toPtr[i] = fromPtr[i * 4];
+        }
+    }
+}
+
 
 
 //==============================================================================
@@ -186,16 +196,20 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
-        buffer.applyGain(20.0f);
-        stage1.processBlock(buffer);
         resample.interpolate(buffer);
+        resample.decimate(buffer);
+        //resample.test(buffer);
+        /*buffer.applyGain(2.0f);
+        stage1.processBlock(buffer);
+        //resample.interpolate(buffer);
         stage2.processBlock(buffer);
         stage3.processBlock(buffer);
         stage4.processBlock(buffer);
         stage5.processBlock(buffer);
         stage6.processBlock(buffer);
-        buffer.applyGain(0.02f);
+        buffer.applyGain(0.02f);*/
     }
+
 }
 
 //==============================================================================

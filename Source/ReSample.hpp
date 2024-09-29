@@ -24,7 +24,7 @@ public:
 
     float& operator[](int i) {
         //int index = i < 0 ? -i + 1 : i;
-        return sinc[i < 0 ? -i - 1 : i];
+        return sinc[i < 0 ? -i : i];
     }
 
     float& operator()(int i, int delta) {
@@ -58,11 +58,15 @@ private:
     sincArray<iSize, N> sinc;
     juce::AudioBuffer<float> interpolatedBuf;
     std::vector<CircularBuffer<float, N>> beginBuf, endBuf;
-    std::vector<CircularBuffer<float, N>> decBeginBuf, decEndBuf;
+    std::vector<CircularBuffer<float, N * iSize>> decBeginBuf, decEndBuf;
 
 public:
     void configure(double sampleRate){
         sinc.configure(static_cast<float>(sampleRate));
+        beginBuf.clear();
+        endBuf.clear();
+        decBeginBuf.clear();
+        decEndBuf.clear();
     }
     void interpolate(juce::AudioBuffer<float>& buffer) {
         int channelSize = buffer.getNumChannels();
@@ -70,23 +74,18 @@ public:
         int iBufSize = oBufSize * iSize;
         beginBuf.resize(channelSize, CircularBuffer<float, N>(0));
         endBuf.resize(channelSize, CircularBuffer<float, N>(0));
-        juce::AudioBuffer<float> x(channelSize, buffer.getNumSamples() + N);
+        juce::AudioBuffer<float> x(channelSize, oBufSize + N);
         for (int channel = 0; channel < channelSize; channel++) {
-            x.copyFrom(channel, N, buffer, channel, 0, buffer.getNumSamples());
+            x.copyFrom(channel, N, buffer, channel, 0, oBufSize);
             float* currentSample = x.getWritePointer(channel);
             for (int i = 0; i < N; i++) {
-                currentSample[i] = endBuf[channel][i];
+                //forditva masolom bele
+                currentSample[N-i-1] = endBuf[channel][i];
             }
         }
 
-        /*DBG("\nX=");
-        for (int i = 0; i < x.getNumSamples(); i++) {
-            float* sample = x.getWritePointer(0);
-            DBG(sample[i]);
-        }*/
 
-        //eddig megvan
-        interpolatedBuf.setSize(channelSize, iBufSize, false, false, false);
+        interpolatedBuf.setSize(channelSize, iBufSize, true, true, true);
         for (int channel = 0; channel < channelSize; channel++) {
             float const* channelSamples = x.getReadPointer(channel);
             float* iSamples = interpolatedBuf.getWritePointer(channel);
@@ -95,12 +94,12 @@ public:
             *iSamples = *channelSamples;
             for (int k = 1; k < iBufSize; k++) {
                 int delta = k % 4;
-                int chI = k / 4;
+                int index = k / 4;
                 if (delta != 0) {
                     iSamples[k] = 0;
                     //mintakbol
                     for (int n = -N; n <= 0; n++) {
-                        iSamples[k] += this->sinc(n, delta) * channelSamples[chI-n];
+                        iSamples[k] += this->sinc(n, delta) * channelSamples[index-n];
                     }
                     //bufferbol
                     for (int n = 1; n <= N; n++) {
@@ -108,17 +107,19 @@ public:
                     }
                 }
                 else {
-                    iSamples[k] = channelSamples[chI];
-                    beginBuf[channel].push(channelSamples[chI-1]);
+                    iSamples[k] = channelSamples[index];
+                    beginBuf[channel].push(channelSamples[index-1]);
 
                 }
             }
+            // az utolso is belekeruljon a bufferbe
+            beginBuf[channel].push(channelSamples[oBufSize - 1]);
             //endbuf feltoltese ha kesz minden
             for (int i = 0; i < N; i++) {
                 //DBG(x.getNumSamples());
                 //DBG(buffer.getNumSamples());
                 //DBG(channelSamples[channelSize - 1 + i]);
-                endBuf[channel].push(channelSamples[oBufSize - 1 + i]);
+                endBuf[channel].push(channelSamples[oBufSize + i]);
             }
             //DBG("\n\n");
         }
@@ -129,18 +130,63 @@ public:
         int channelSize = buffer.getNumChannels();
         int oBufSize = buffer.getNumSamples();
         int iBufSize = this->interpolatedBuf.getNumSamples();
-        decBeginBuf.resize(channelSize, CircularBuffer<float, N>(0));
+        decBeginBuf.resize(channelSize, CircularBuffer<float, N * iSize>(0));
+        decEndBuf.resize(channelSize, CircularBuffer<float, N * iSize>(0));
+
+        //bepakolni az elozo veget az elejere
+        juce::AudioBuffer<float> x(channelSize, iBufSize + N * iSize);
+        for (int channel = 0; channel < channelSize; channel++) {
+            x.copyFrom(channel, N * iSize, interpolatedBuf, channel, 0, iBufSize);
+            float* currentSample = x.getWritePointer(channel);
+            for (int i = 0; i < N * iSize; i++) {
+                currentSample[N * iSize-i-1] = decEndBuf[channel][i];
+            }
+        }
+
 
         for (int channel = 0; channel < channelSize; channel++) {
-            float const* iSamples = interpolatedBuf.getReadPointer(channel);
+            float const* iSamples = x.getReadPointer(channel);
             float* samples = buffer.getWritePointer(channel);
             for (int k = 0; k < oBufSize; k++) {
                 samples[k] = 0;
-                int index = 4 * k; //hogy a faszba szerezzek még annyi mintát amennyi kell? elvileg már megszereztem, de hogy kezeljem ezt
-                for (int n = -N; n <= 0; n++) {
-                    samples[k] += sinc[n] * iSamples[index - n];
+                int index = 4 * k; 
+
+                //bufferbol
+                for (int n = 1; n < N * iSize; n++) {
+                    samples[k] += sinc[n] * decBeginBuf[channel][n - 1];
                 }
+
+                //mintakbol
+                for (int n = -1; n > -N*iSize; n--) {
+                    samples[k] += sinc[n] * iSamples[index - n];
+                    decBeginBuf[channel].push(iSamples[index - n]);
+                }
+
+
+
+                samples[k] += sinc[0] * iSamples[index];
+                samples[k] /= iSize;
+
             }
+
+            //endbuf feltoltese ha kesz minden
+            for (int i = 0; i < N * iSize; i++) {
+                decEndBuf[channel].push(iSamples[iBufSize + i]);
+            }
+        }
+    }
+
+    void test(juce::AudioBuffer<float>& to) {
+        for (int channel = 0; channel < to.getNumChannels(); channel++) {
+            float const* fromPtr = interpolatedBuf.getReadPointer(channel);
+            float* toPtr = to.getWritePointer(channel);
+            for (int i = 0; i < to.getNumSamples(); i++) {
+                toPtr[i] = fromPtr[i * 4];
+            }
+            /*DBG(fromPtr[20]);
+            DBG(toPtr[5]);
+            DBG(" . ");*/
+
         }
     }
     

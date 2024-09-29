@@ -49,7 +49,8 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             channelSamples[i] = F * yRCBuffer[channel] + G * channelSamples[i] + H * uRCBuffer[channel];
             this->yRCBuffer[channel] = channelSamples[i];
             this->uRCBuffer[channel] = tmp;
-
+            if(channelSamples[i]>this->maxO)
+                this->maxO = channelSamples[i];
         }
     }
 }
@@ -84,4 +85,5 @@ void Stage2::configure(double sampleRate) {
 void Stage2::initParameters(juce::AudioProcessorValueTreeState& vts) {
     this->gainParameter = vts.getRawParameterValue("gain");
     this->cutOffVoltage = 13.45f;
+    this->maxO = 0.0f;
 }

@@ -87,7 +87,7 @@ private:
 
     juce::AudioProcessorValueTreeState parameters;
 
-    ReSample<4,5> resample;
+    ReSample<4,20> resample;
 
     Stage1 stage1;
     Stage2 stage2;
