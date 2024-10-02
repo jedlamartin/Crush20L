@@ -12,7 +12,10 @@
 //==============================================================================
 
 OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCrush20LAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts)
+    : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts), 
+    powerButton(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize, BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize), 
+    odButton(BinaryData::odbutton_off_png, BinaryData::odbutton_off_pngSize, BinaryData::odbutton_on_png, BinaryData::odbutton_on_pngSize), 
+    powerLed(BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize)
 
 {
     this->background = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
@@ -32,27 +35,24 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     this->addAndMakeVisible(odSlider);
     odAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "od", odSlider));
     
-    this->addAndMakeVisible(odButton);
-    odButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "odButton", odButton));
-    
+        
     this->addAndMakeVisible(volSlider);
     volAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "vol", volSlider));
 
     this->addAndMakeVisible(powerButton);
     powerButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "power", powerButton));
-    powerButton.setClickingTogglesState(true);
-    powerButton.onClick = [this]() {
-        if (!this->powerButton.getToggleState()) {
-            //this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-            this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-            this->powerButton.repaint();
-        }
-        else{
-            //this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-            this->powerButton.setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-            this->powerButton.repaint();
-        }
-        };
+    powerButton.configure();
+
+
+
+    this->addAndMakeVisible(odButton);
+    odButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "odButton", odButton));
+    odButton.configure();
+
+    this->addAndMakeVisible(powerLed);
+    powerButton.pushListener(&powerLed);
+    //powerLed.configure();
+
     setSize (1000, 350);
 
 }
@@ -72,7 +72,7 @@ void OrangeCrush20LAudioProcessorEditor::paint (juce::Graphics& g)
         g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     }
 
-    g.drawRect(this->powerButton.getBounds());
+    //g.drawRect(this->powerButton.getBounds());
 }
 
 void OrangeCrush20LAudioProcessorEditor::resized()
@@ -82,9 +82,10 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->midSlider.setBounds(464, 177, 60, 60);
     this->trebleSlider.setBounds(551, 177, 60, 60);
     this->odSlider.setBounds(636, 177, 60, 60);
-    this->odButton.setBounds(400, 100, 60, 60);
+    this->odButton.setBounds(705, 174, 25, 25);
     this->volSlider.setBounds(292, 172, 70, 70);
-    this->powerButton.setBounds(100, 172, 50, 50);
+    this->powerButton.setBounds(117, 170, 75, 75);
+    this->powerLed.setBounds(205, 186, 40, 40);
 }
 
 Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
@@ -117,9 +118,4 @@ void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
         g.drawFittedText("No image", x, y, width, height, juce::Justification::horizontallyCentred | juce::Justification::centred, 1);
     }
 
-}
-
-ToggleSwitch::ToggleSwitch():juce::ImageButton(){
-    //this->setState(juce::Button::ButtonState::buttonDown);
-    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
 }

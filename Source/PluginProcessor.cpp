@@ -10,19 +10,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
-static void decimate(juce::AudioBuffer<float>& from, juce::AudioBuffer<float>& to) {
-    for (int channel = 0; channel < from.getNumChannels(); channel++) {
-        float const* fromPtr = from.getReadPointer(channel);
-        float* toPtr = to.getWritePointer(channel);
-        for (int i = 0; i < to.getNumSamples(); i++) {
-            toPtr[i] = fromPtr[i * 4];
-        }
-    }
-}
-
-
-
 //==============================================================================
 OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -196,18 +183,38 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
+        buffer.applyGain(2.0f);
+
+        
+        stage1.processBlock(buffer);
+
+
         resample.interpolate(buffer);
+
+
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
+            stage2.processBlock(buffer);
+            });
+        //ezt tesztelni kell hogy jó legyen
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
+            stage3.processBlock(buffer);
+            });
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
+            stage4.processBlock(buffer);
+            });
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
+            stage5.processBlock(buffer);
+            });
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
+            stage6.processBlock(buffer);
+            });
+
+
         resample.decimate(buffer);
         //resample.test(buffer);
-        /*buffer.applyGain(2.0f);
-        stage1.processBlock(buffer);
         //resample.interpolate(buffer);
-        stage2.processBlock(buffer);
-        stage3.processBlock(buffer);
-        stage4.processBlock(buffer);
-        stage5.processBlock(buffer);
-        stage6.processBlock(buffer);
-        buffer.applyGain(0.02f);*/
+       
+        buffer.applyGain(0.02f);
     }
 
 }

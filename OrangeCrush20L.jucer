@@ -6,6 +6,11 @@
               headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="SwkWMp" name="led_off.png" compile="0" resource="1" file="Assets/led_off.png"/>
+      <FILE id="h2G2qx" name="led_on.png" compile="0" resource="1" file="Assets/led_on.png"/>
+      <FILE id="f4DebJ" name="odbutton_off.png" compile="0" resource="1"
+            file="Assets/odbutton_off.png"/>
+      <FILE id="Q1M8Df" name="odbutton_on.png" compile="0" resource="1" file="Assets/odbutton_on.png"/>
       <FILE id="SjzooW" name="powerswitch_off.png" compile="0" resource="1"
             file="Assets/powerswitch_off.png"/>
       <FILE id="B8viRp" name="powerswitch_on.png" compile="0" resource="1"
@@ -18,6 +23,8 @@
       <FILE id="m2VYwR" name="hc500.txt" compile="0" resource="1" file="Assets/hc500.txt"/>
     </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
+      <FILE id="Ilvrbp" name="Switch.cpp" compile="1" resource="0" file="Source/Switch.cpp"/>
+      <FILE id="BVncoX" name="Switch.h" compile="0" resource="0" file="Source/Switch.h"/>
       <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
             file="Source/CircularBuffer.hpp"/>
       <FILE id="KsVqei" name="ReSample.hpp" compile="0" resource="0" file="Source/ReSample.hpp"/>

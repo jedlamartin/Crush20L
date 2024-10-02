@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "Switch.h"
 
 //==============================================================================
 /**
@@ -35,10 +36,6 @@ public:
     ~Knob();
 };
 
-class ToggleSwitch : public juce::ImageButton {
-public:
-    ToggleSwitch();
-};
 
 
 class OrangeCrush20LAudioProcessorEditor  : public juce::AudioProcessorEditor {
@@ -75,7 +72,7 @@ private:
     Knob odSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> odAttachment;
 
-    juce::ToggleButton odButton;
+    ToggleSwitch odButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> odButtonAttachment;
 
     Knob volSlider;
@@ -83,6 +80,8 @@ private:
 
     ToggleSwitch powerButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerButtonAttachment;
+
+    ListenerSwitch powerLed;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessorEditor)
 };

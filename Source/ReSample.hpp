@@ -93,8 +93,8 @@ public:
             //az elsot automatikusan kitoltjuk, hogy a buffereles jo legyen
             *iSamples = *channelSamples;
             for (int k = 1; k < iBufSize; k++) {
-                int delta = k % 4;
-                int index = k / 4;
+                int delta = k % iSize;
+                int index = k / iSize;
                 if (delta != 0) {
                     iSamples[k] = 0;
                     //mintakbol
@@ -139,7 +139,7 @@ public:
             x.copyFrom(channel, N * iSize, interpolatedBuf, channel, 0, iBufSize);
             float* currentSample = x.getWritePointer(channel);
             for (int i = 0; i < N * iSize; i++) {
-                currentSample[N * iSize-i-1] = decEndBuf[channel][i];
+                currentSample[N * iSize - i - 1] = decEndBuf[channel][i];
             }
         }
 
@@ -149,7 +149,7 @@ public:
             float* samples = buffer.getWritePointer(channel);
             for (int k = 0; k < oBufSize; k++) {
                 samples[k] = 0;
-                int index = 4 * k; 
+                int index = iSize * k; 
 
                 //bufferbol
                 for (int n = 1; n < N * iSize; n++) {
@@ -188,6 +188,10 @@ public:
             DBG(" . ");*/
 
         }
+    }
+
+    void process(std::function<void(juce::AudioBuffer<float>&)> processBlock) {
+        processBlock(this->interpolatedBuf);
     }
     
 };
