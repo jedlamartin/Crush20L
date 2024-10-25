@@ -3,6 +3,8 @@
 #include <vector>
 #include "JuceHeader.h"
 
+#define CROSSFADE_SAMPLES 48000
+
 class Stage {
 protected:
 	float sampleRate;

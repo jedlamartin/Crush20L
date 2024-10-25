@@ -45,6 +45,8 @@ parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParam
     //stage5
     stage5.initParameters(parameters.getRawParameterValue("vol"));
     this->parameters.addParameterListener("vol", &stage5Attachment);
+
+
 }
 
 OrangeCrush20LAudioProcessor::~OrangeCrush20LAudioProcessor()
@@ -196,9 +198,9 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             stage2.processBlock(buffer);
             });
         //ezt tesztelni kell hogy jó legyen
-        resample.process([this](juce::AudioBuffer<float>& buffer) {
+        /*resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage3.processBlock(buffer);
-            });
+            });*/
         resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage4.processBlock(buffer);
             });
@@ -211,10 +213,10 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
         resample.decimate(buffer);
-        //resample.test(buffer);
-        //resample.interpolate(buffer);
-       
+
+        //smoothing.processBlock(buffer);
         buffer.applyGain(0.02f);
+        //buffer.applyGain(0.2f);
     }
 
 }
@@ -257,13 +259,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrangeCrush20LAudioProcessor
 {
     juce::AudioProcessorValueTreeState::ParameterLayout vtsParameterLayout{
     std::make_unique<juce::AudioParameterBool>("power", "Power", false),
-    std::make_unique<juce::AudioParameterFloat>("gain", "Gain", juce::NormalisableRange<float>(0.01f, 10000.0f, 0.005f, 0.3f), 0.01f),
-    std::make_unique<juce::AudioParameterFloat>("bass", "Bass", juce::NormalisableRange<float>(0.01f, 250000.0f, 10.0f, 0.3f), 25000.0f),
-    std::make_unique<juce::AudioParameterFloat>("mid", "Mid", juce::NormalisableRange<float>(0.01f, 25000.0f, 1.0f, 0.3f), 2500.000f),
-    std::make_unique<juce::AudioParameterFloat>("treble", "Treble", juce::NormalisableRange<float>(0.01f, 250000.0f, 10.0f, 0.3f), 25000.0f),
-    std::make_unique<juce::AudioParameterFloat>("od", "Overdrive", juce::NormalisableRange<float>(0.01f, 50000.0f, 2.0f, 6.58f), 0.01f),
+    std::make_unique<juce::AudioParameterFloat>("gain", "Gain", juce::NormalisableRange<float>(0.01f, 10000.0f, 0.05f, 0.3f), 0.01f),
+    std::make_unique<juce::AudioParameterFloat>("bass", "Bass", juce::NormalisableRange<float>(0.01f, 250000.0f, 0.5f, 0.3f), 25000.0f),
+    std::make_unique<juce::AudioParameterFloat>("mid", "Mid", juce::NormalisableRange<float>(0.01f, 25000.0f, 0.5f, 0.3f), 2500.000f),
+    std::make_unique<juce::AudioParameterFloat>("treble", "Treble", juce::NormalisableRange<float>(0.01f, 250000.0f, 0.5f, 0.3f), 25000.0f),
+    std::make_unique<juce::AudioParameterFloat>("od", "Overdrive", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 6.58f), 0.01f),
     std::make_unique<juce::AudioParameterBool>("odButton", "Overdrive Button", false),
-    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 2.0f, 0.3f), 0.01f)
+    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 0.3f), 0.01f)
     };
     return vtsParameterLayout;
 }

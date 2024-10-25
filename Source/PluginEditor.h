@@ -24,6 +24,7 @@ private:
 public:
     MyLookAndFeel();
     void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
+    int getSliderPopupPlacement(juce::Slider&) override;
 };
 
 class Knob :public juce::Slider {
@@ -33,6 +34,7 @@ private:
 public:
     Knob();
     void paint(juce::Graphics& g) override;
+    juce::String getTextFromValue(double value) override;
     ~Knob();
 };
 

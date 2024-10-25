@@ -88,12 +88,18 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->powerLed.setBounds(205, 186, 40, 40);
 }
 
-Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
+Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, NoTextBox) {
     this->setLookAndFeel(&this->lookAndFeel);
+    this->setPopupDisplayEnabled(true, false, nullptr);
 }
 
 void Knob::paint(juce::Graphics& g){
     this->lookAndFeel.drawRotarySlider(g, this->getLocalBounds().getX(), this->getLocalBounds().getY(), this->getLocalBounds().getWidth(), this->getLocalBounds().getHeight(), this->getNormalisableRange().convertTo0to1(this->getValue()), 0.0f, 360.0f, *this);
+}
+
+juce::String Knob::getTextFromValue(double value)
+{
+    return juce::String((this->getNormalisableRange().convertTo0to1(value)) * 10.0f, 1);
 }
 
 Knob::~Knob(){
@@ -118,4 +124,9 @@ void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width,
         g.drawFittedText("No image", x, y, width, height, juce::Justification::horizontallyCentred | juce::Justification::centred, 1);
     }
 
+}
+
+int MyLookAndFeel::getSliderPopupPlacement(juce::Slider&)
+{
+    return juce::BubbleComponent::BubblePlacement::above;
 }

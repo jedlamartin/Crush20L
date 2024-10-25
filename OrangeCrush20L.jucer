@@ -23,6 +23,8 @@
       <FILE id="m2VYwR" name="hc500.txt" compile="0" resource="1" file="Assets/hc500.txt"/>
     </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
+      <FILE id="mEcZl2" name="ParameterQueue.hpp" compile="0" resource="0"
+            file="Source/ParameterQueue.hpp"/>
       <FILE id="Ilvrbp" name="Switch.cpp" compile="1" resource="0" file="Source/Switch.cpp"/>
       <FILE id="BVncoX" name="Switch.h" compile="0" resource="0" file="Source/Switch.h"/>
       <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
