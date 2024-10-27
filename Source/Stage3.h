@@ -21,7 +21,6 @@ private:
 	std::array<float, 16> HSat;
 	std::array<float, 4> JSat;
 	std::array<float, 4> DSat;
-	float ESat;
 	float KSat;
 
 
@@ -39,12 +38,14 @@ private:
 	std::vector<float> pSat;
 	std::atomic<float>* odParameter = nullptr;
 	std::atomic<float>* odButton = nullptr;
-	float R35;
-	float cutOffVoltage;
-	float wmax;
-	float inmax;
+	const float R35;
+	const float cutOffVoltage;
+	float wMax;
+	float maxInput;
+	float maxOutput;
 
 public:
+	Stage3();
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
 	void initParameters(std::atomic<float>* odParameter, std::atomic<float>* odButton);

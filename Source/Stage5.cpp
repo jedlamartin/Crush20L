@@ -57,7 +57,7 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
         float* channelSamples = buffer.getWritePointer(channel);
         for (int i = 0; i < buffer.getNumSamples(); i++) {
             float yCurrent = params.A * yBuffer[channel][0] + params.B * yBuffer[channel][1] + params.C * channelSamples[i] + params.D * uBuffer[channel][0] + params.E * uBuffer[channel][1];
-            float yUpdate = params.A * yBuffer[channel][0] + params.B * yBuffer[channel][1] + params.C * channelSamples[i] + params.D * uBuffer[channel][0] + params.E * uBuffer[channel][1];
+            float yUpdate = updatedParams.A * yUBuffer[channel][0] + updatedParams.B * yUBuffer[channel][1] + updatedParams.C * channelSamples[i] + updatedParams.D * uUBuffer[channel][0] + updatedParams.E * uUBuffer[channel][1];
 
             this->yBuffer[channel].push(yCurrent);
             this->uBuffer[channel].push(channelSamples[i]);
@@ -87,6 +87,10 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
             this->uVolBuffer[channel].push(tmp);
             this->yUVolBuffer[channel].push(yUpdate);
             this->uUVolBuffer[channel].push(tmpU);
+
+            float mult = this->crossfade.getCurrentValue();
+            channelSamples[i] = mult * yCurrent + (1.0f - mult) * yUpdate;
+            this->crossfade.getNextValue();
         }
     }
 

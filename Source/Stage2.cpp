@@ -10,12 +10,13 @@
 
 #include "Stage2.h"
 
+Stage2::Stage2():Stage(), cutOffVoltage(TL072_CUTOFF){}
+
 void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 {
     if (!crossfade.isSmoothing()) {
         ParameterSet2 updt;
         if (updatedParameters.read_and_pop(updt)) {
-            //DBG("Changed!\n");
             if (crossfade.getTargetValue() == 1.0f) {
                 updatedParams = updt;
                 yUBuffer.clear();
@@ -37,12 +38,12 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 
 
     int channelNumber = buffer.getNumChannels();
-    this->yBuffer.resize(channelNumber, CircularBuffer<float, 2>{0});
-    this->uBuffer.resize(channelNumber, CircularBuffer<float, 2>{0});
+    this->yBuffer.resize(channelNumber, CircularBuffer<float, 2>{0.0f});
+    this->uBuffer.resize(channelNumber, CircularBuffer<float, 2>{0.0f});
     this->yRCBuffer.resize(channelNumber, 0.0f);
     this->uRCBuffer.resize(channelNumber, 0.0f);
-    this->yUBuffer.resize(channelNumber, CircularBuffer<float, 2>{0});
-    this->uUBuffer.resize(channelNumber, CircularBuffer<float, 2>{0});
+    this->yUBuffer.resize(channelNumber, CircularBuffer<float, 2>{0.0f});
+    this->uUBuffer.resize(channelNumber, CircularBuffer<float, 2>{0.0f});
     this->yURCBuffer.resize(channelNumber, 0.0f);
     this->uURCBuffer.resize(channelNumber, 0.0f);
 
@@ -89,8 +90,8 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             //RC
             tmp = yCurrent;
             tmpU = yUpdate;
-            yCurrent = params.F * yRCBuffer[channel] + params.G * channelSamples[i] + params.H * uRCBuffer[channel];
-            yUpdate = updatedParams.F * yURCBuffer[channel] + updatedParams.G * channelSamples[i] + updatedParams.H * uURCBuffer[channel];
+            yCurrent = params.F * yRCBuffer[channel] + params.G * yCurrent + params.H * uRCBuffer[channel];
+            yUpdate = updatedParams.F * yURCBuffer[channel] + updatedParams.G * yUpdate + updatedParams.H * uURCBuffer[channel];
 
             this->yRCBuffer[channel] = yCurrent;
             this->uRCBuffer[channel] = tmp;
@@ -101,8 +102,8 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             channelSamples[i] = mult * yCurrent + (1.0f - mult) * yUpdate;
             this->crossfade.getNextValue();
 
-            if(channelSamples[i]>this->maxO)
-                this->maxO = channelSamples[i];
+            if(channelSamples[i]>this->maxOutput)
+                this->maxOutput = channelSamples[i];
         }
     }
 }
@@ -131,9 +132,8 @@ void Stage2::configure(double sampleRate) {
     this->updatedParameters.push(newValues);
 }
 
-void Stage2::initParameters(juce::AudioProcessorValueTreeState& vts) {
-    this->gainParameter = vts.getRawParameterValue("gain");
-    this->cutOffVoltage = 13.45f;
+void Stage2::initParameters(std::atomic<float>* gainParameter) {
+    this->gainParameter = gainParameter;
     this->crossfade.reset(CROSSFADE_SAMPLES);
-    this->maxO = 0.0f;
+    this->maxOutput = 0.0f;
 }

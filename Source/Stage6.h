@@ -18,7 +18,7 @@ private:
     float A, B, C;
     std::vector<float> yBuffer;
     std::vector<float> uBuffer;
-    float maxtestInput, maxtestOutput;
+    float maxInput, maxOutput;
 
 public:
     void processBlock(juce::AudioBuffer<float>& buffer) override;

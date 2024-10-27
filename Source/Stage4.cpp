@@ -5,7 +5,6 @@ void Stage4::processBlock(juce::AudioBuffer<float>& buffer) {
     if (!crossfade.isSmoothing()) {
         ParameterSet4 updt;
         if (updatedParameters.read_and_pop(updt)) {
-            //DBG("Changed!\n");
             if (crossfade.getTargetValue() == 1.0f) {
                 updatedParams = updt;
                 yUBuffer.clear();
@@ -41,7 +40,6 @@ void Stage4::processBlock(juce::AudioBuffer<float>& buffer) {
             float mult = this->crossfade.getCurrentValue();
             channelSamples[i] = mult * yCurrent + (1.0f - mult) * yUpdate;
             this->crossfade.getNextValue();
-            //DBG(channelSamples[i]);
 
             this->yBuffer[channel].push(yCurrent);
             this->uBuffer[channel].push(tmp);

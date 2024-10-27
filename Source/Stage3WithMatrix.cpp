@@ -162,33 +162,19 @@ static T closestElementLinearInterpolate(const T& x, const std::vector<T>& xArra
 
         if (x < xArray[mid]) {
             if (mid > 0 && x > xArray[mid - 1]) {
-                //idx = (x - array[mid] < x - array[mid - 1]) ? mid : mid - 1;
                 T div = xArray[mid] - xArray[mid - 1];
                 T mull = (xArray[mid] - x) / div;
                 T mulr = (x - xArray[mid - 1]) / div;
-                T test = xArray[mid - 1] * mull + xArray[mid] * mulr;
-                //DBG(mull);
-                //DBG(mulr);
-                //DBG(mulr + mull);
-                //DBG("\n");
                 return yArray[mid - 1] * mull + yArray[mid] * mulr;
             }
             j = mid;
         }
         else {
             if (mid < size - 1 && x < xArray[mid + 1]) {
-                //idx = (x - array[mid] < x - array[mid + 1]) ? mid : mid + 1;
                 T div = xArray[mid + 1] - xArray[mid];
                 T mull = (xArray[mid + 1] - x) / div;
                 T mulr = (x - xArray[mid]) / div;
-                T test = yArray[mid] * mull + yArray[mid + 1] * mulr;
-                //DBG(mull);
-                //DBG(mulr);
-                //DBG(mulr+mull);
-                //DBG("\n");
                 return yArray[mid] * mull + yArray[mid + 1] * mulr;
-
-                //break;
             }
             i = mid + 1;
         }

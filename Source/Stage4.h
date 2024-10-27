@@ -14,7 +14,7 @@
 #include "CircularBuffer.hpp"
 #include "ParameterQueue.hpp"
 
-static struct ParameterSet4 {
+struct ParameterSet4 {
 	double A, B, C, D, E, F, G, H, I;
 	ParameterSet4() :A(0.0), B(0.0), C(0.0), D(0.0), E(0.0), F(0.0), G(0.0), H(0.0), I(0.0) {}
 };

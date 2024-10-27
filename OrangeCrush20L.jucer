@@ -6,6 +6,7 @@
               headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="gyLRal" name="hardclip.txt" compile="0" resource="1" file="Assets/hardclip.txt"/>
       <FILE id="SwkWMp" name="led_off.png" compile="0" resource="1" file="Assets/led_off.png"/>
       <FILE id="h2G2qx" name="led_on.png" compile="0" resource="1" file="Assets/led_on.png"/>
       <FILE id="f4DebJ" name="odbutton_off.png" compile="0" resource="1"
@@ -17,10 +18,6 @@
             file="Assets/powerswitch_on.png"/>
       <FILE id="r81CXj" name="background.png" compile="0" resource="1" file="Assets/background.png"/>
       <FILE id="Bp4nnP" name="crush20l256.png" compile="0" resource="1" file="Assets/crush20l256.png"/>
-      <FILE id="xkKGuo" name="hc.txt" compile="0" resource="1" file="Assets/hc.txt"/>
-      <FILE id="tzZa5a" name="hc1.txt" compile="0" resource="1" file="Assets/hc1.txt"/>
-      <FILE id="c5ZNWb" name="hc10.txt" compile="0" resource="1" file="Assets/hc10.txt"/>
-      <FILE id="m2VYwR" name="hc500.txt" compile="0" resource="1" file="Assets/hc500.txt"/>
     </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
       <FILE id="mEcZl2" name="ParameterQueue.hpp" compile="0" resource="0"
@@ -44,10 +41,6 @@
       <FILE id="dxDl3D" name="Stage5.cpp" compile="1" resource="0" file="Source/Stage5.cpp"/>
       <FILE id="AEKSlq" name="Stage6.h" compile="0" resource="0" file="Source/Stage6.h"/>
       <FILE id="UGBPCe" name="Stage6.cpp" compile="1" resource="0" file="Source/Stage6.cpp"/>
-      <FILE id="Gp146N" name="Stage3WithMatrix.cpp" compile="1" resource="0"
-            file="Source/Stage3WithMatrix.cpp"/>
-      <FILE id="f02RDO" name="Stage3WithMatrix.h" compile="0" resource="0"
-            file="Source/Stage3WithMatrix.h"/>
       <FILE id="KnHWPP" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="s13cPF" name="PluginProcessor.cpp" compile="1" resource="0"

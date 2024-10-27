@@ -157,7 +157,7 @@ public:
                 }
 
                 //mintakbol
-                for (int n = -1; n > -N*iSize; n--) {
+                for (int n = -1; n > -(N*iSize); n--) {
                     samples[k] += sinc[n] * iSamples[index - n];
                     decBeginBuf[channel].push(iSamples[index - n]);
                 }

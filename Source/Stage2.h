@@ -6,7 +6,7 @@
 #include "ParameterQueue.hpp"
 #include "CircularBuffer.hpp"
 
-static struct ParameterSet2 {
+struct ParameterSet2 {
 	double A, B, C, D, E, F, G, H;
 	ParameterSet2() :A(0.0), B(0.0), C(0.0), D(0.0), E(0.0), F(0.0), G(0.0), H(0.0) {}
 };
@@ -30,11 +30,12 @@ private:
 	std::vector<float> yURCBuffer;
 	std::vector<float> uURCBuffer;
 
-	float cutOffVoltage;
-	float maxO;
+	const float cutOffVoltage;
+	float maxOutput;
 
 public:
+	Stage2();
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
-	void initParameters(juce::AudioProcessorValueTreeState& vts);
+	void initParameters(std::atomic<float>* gainParameter);
 };

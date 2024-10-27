@@ -3,7 +3,8 @@
 #include <vector>
 #include "JuceHeader.h"
 
-#define CROSSFADE_SAMPLES 48000
+#define TL072_CUTOFF 13.45f
+#define CROSSFADE_SAMPLES 14400
 
 class Stage {
 protected:
