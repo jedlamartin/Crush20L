@@ -222,7 +222,6 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
                 float div = xArray[mid] - xArray[mid - 1];
                 float mull = (xArray[mid] - x) / div;
                 float mulr = (x - xArray[mid - 1]) / div;
-                float test = xArray[mid - 1] * mull + xArray[mid] * mulr;
                 return yArray[mid - 1] * mull + yArray[mid] * mulr;
             }
             j = mid;
@@ -232,7 +231,6 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
                 float div = xArray[mid + 1] - xArray[mid];
                 float mull = (xArray[mid + 1] - x) / div;
                 float mulr = (x - xArray[mid]) / div;
-                float test = yArray[mid] * mull + yArray[mid + 1] * mulr;
                 return yArray[mid] * mull + yArray[mid + 1] * mulr;
             }
             i = mid + 1;
@@ -243,7 +241,6 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
 
 void Stage3::configure(double sampleRate) {
 
-    float T = static_cast<float>(1 / sampleRate);
     float h = static_cast<float>(2 * sampleRate);
 
     float R22 = 47000;
@@ -256,10 +253,10 @@ void Stage3::configure(double sampleRate) {
     else {
         R37 = 100000;
     }
-    float C12 = 220e-9;
-    float C18 = 470e-12;
-    float E13 = 2.2e-6;
-    float E14 = 2.2e-6;
+    float C12 = 220e-9f;
+    float C18 = 470e-12f;
+    float E13 = 2.2e-6f;
+    float E14 = 2.2e-6f;
 
     std::array<float, 16> A{ 0.0f };
     std::array<float, 4> B{ 0.0f };

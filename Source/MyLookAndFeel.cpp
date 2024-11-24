@@ -87,8 +87,6 @@ void ToggleSwitch::configure() {
         this->changeState();
         for (auto i : this->listeners) {
             i->changeState();
-            bool temp = i->isToggleable();
-            //DBG((temp ? "true" : "false"));
         }
         };
 
