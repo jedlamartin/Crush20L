@@ -13,9 +13,9 @@
 
 OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCrush20LAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
     : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts), 
-    powerButton(BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize, BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize), 
-    odButton(BinaryData::odbutton_off_png, BinaryData::odbutton_off_pngSize, BinaryData::odbutton_on_png, BinaryData::odbutton_on_pngSize), 
-    powerLed(BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize)
+    powerButton(vts.getRawParameterValue("power"), BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize, BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize),
+    odButton(vts.getRawParameterValue("odButton"), BinaryData::odbutton_off_png, BinaryData::odbutton_off_pngSize, BinaryData::odbutton_on_png, BinaryData::odbutton_on_pngSize),
+    powerLed(vts.getRawParameterValue("power"), BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize)
 
 {
     this->background = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
@@ -88,45 +88,3 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->powerLed.setBounds(205, 186, 40, 40);
 }
 
-Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, NoTextBox) {
-    this->setLookAndFeel(&this->lookAndFeel);
-    this->setPopupDisplayEnabled(true, false, nullptr);
-}
-
-void Knob::paint(juce::Graphics& g){
-    this->lookAndFeel.drawRotarySlider(g, this->getLocalBounds().getX(), this->getLocalBounds().getY(), this->getLocalBounds().getWidth(), this->getLocalBounds().getHeight(), this->getNormalisableRange().convertTo0to1(this->getValue()), 0.0f, 360.0f, *this);
-}
-
-juce::String Knob::getTextFromValue(double value)
-{
-    return juce::String((this->getNormalisableRange().convertTo0to1(value)) * 10.0f, 1);
-}
-
-Knob::~Knob(){
-    this->setLookAndFeel(nullptr);
-}
-
-
-
-MyLookAndFeel::MyLookAndFeel() :LookAndFeel_V4() {
-    this->knobImage = juce::ImageCache::getFromMemory(BinaryData::crush20l256_png, BinaryData::crush20l256_pngSize);
-    this->knobFrames = static_cast<int>(juce::jmax(this->knobImage.getWidth(), this->knobImage.getHeight()) / juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight()));
-    this->knobSize = juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight());
-}
-
-void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&){
-    if (this->knobImage.isValid()) {
-          
-        g.drawImage(this->knobImage, x, y, juce::jmin(width, height), juce::jmin(width, height), 0, 300 * juce::roundToInt(juce::jmap<float>(sliderPosProportional, 0.0f, static_cast<float>(this->knobFrames - 1))), this->knobSize, this->knobSize);
-
-    }
-    else {
-        g.drawFittedText("No image", x, y, width, height, juce::Justification::horizontallyCentred | juce::Justification::centred, 1);
-    }
-
-}
-
-int MyLookAndFeel::getSliderPopupPlacement(juce::Slider&)
-{
-    return juce::BubbleComponent::BubblePlacement::above;
-}

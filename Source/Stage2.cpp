@@ -58,6 +58,9 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             float yUpdate = updatedParams.A * yUBuffer[channel][0] + updatedParams.B * yUBuffer[channel][1] + updatedParams.C * channelSamples[i] + updatedParams.D * uUBuffer[channel][0] + updatedParams.E * uUBuffer[channel][1];
             
 
+            if (std::abs(yCurrent) > std::abs(this->maxBetween) || std::abs(yUpdate) > std::abs(this->maxBetween))
+                this->maxBetween = yCurrent > yUpdate ? yCurrent : yUpdate;
+
             //Cutoff
             if (yCurrent > this->cutOffVoltage) {
                 yCurrent = this->cutOffVoltage;
@@ -102,7 +105,7 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             channelSamples[i] = mult * yCurrent + (1.0f - mult) * yUpdate;
             this->crossfade.getNextValue();
 
-            if(channelSamples[i]>this->maxOutput)
+            if(std::abs(channelSamples[i])>std::abs(this->maxOutput))
                 this->maxOutput = channelSamples[i];
         }
     }
@@ -135,5 +138,6 @@ void Stage2::configure(double sampleRate) {
 void Stage2::initParameters(std::atomic<float>* gainParameter) {
     this->gainParameter = gainParameter;
     this->crossfade.reset(CROSSFADE_SAMPLES);
-    this->maxOutput = 0.0f;
+    this->maxOutput  = this->maxBetween = 0.0f;
+    
 }

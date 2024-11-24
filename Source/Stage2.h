@@ -32,6 +32,7 @@ private:
 
 	const float cutOffVoltage;
 	float maxOutput;
+	float maxBetween;
 
 public:
 	Stage2();

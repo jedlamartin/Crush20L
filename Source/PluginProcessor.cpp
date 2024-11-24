@@ -10,6 +10,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+//#define RESAMPLE
+
 //==============================================================================
 OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -185,12 +187,12 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
-        buffer.applyGain(15.0f);
+        buffer.applyGain(4.0f);
 
         
         stage1.processBlock(buffer);
 
-
+#ifdef RESAMPLE
         resample.interpolate(buffer);
 
 
@@ -211,10 +213,19 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             stage6.processBlock(buffer);
             });
 
-
+            
         resample.decimate(buffer);
 
-        //smoothing.processBlock(buffer);
+#else 
+        stage2.processBlock(buffer);
+        stage3.processBlock(buffer);
+        stage4.processBlock(buffer);
+        stage5.processBlock(buffer);
+        stage6.processBlock(buffer);
+#endif
+
+
+
         buffer.applyGain(0.02f);
         //buffer.applyGain(0.2f);
     }

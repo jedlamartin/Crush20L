@@ -10,33 +10,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "Switch.h"
+#include "MyLookAndFeel.h"
 
 //==============================================================================
 /**
 */
 
-class MyLookAndFeel :public juce::LookAndFeel_V4 {
-private:
-    juce::Image knobImage;
-    int knobFrames;
-    int knobSize;
-public:
-    MyLookAndFeel();
-    void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
-    int getSliderPopupPlacement(juce::Slider&) override;
-};
 
-class Knob :public juce::Slider {
-private:
-    //juce::RangedAudioParameter* param; //https://forum.juce.com/t/getrawparametervalue-vs-getparameter/38395
-    MyLookAndFeel lookAndFeel;
-public:
-    Knob();
-    void paint(juce::Graphics& g) override;
-    juce::String getTextFromValue(double value) override;
-    ~Knob();
-};
 
 
 

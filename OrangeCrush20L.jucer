@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="tKwdRy" name="OrangeCrush20L" projectType="audioplug" useAppConfig="1"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              companyName="zero" pluginFormats="buildAU,buildStandalone,buildVST3"
+              companyName="Zephyra" pluginFormats="buildAU,buildStandalone,buildVST3"
               headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
@@ -20,10 +20,11 @@
       <FILE id="Bp4nnP" name="crush20l256.png" compile="0" resource="1" file="Assets/crush20l256.png"/>
     </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
+      <FILE id="tCGzlG" name="MyLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/MyLookAndFeel.cpp"/>
+      <FILE id="m0I4jX" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/MyLookAndFeel.h"/>
       <FILE id="mEcZl2" name="ParameterQueue.hpp" compile="0" resource="0"
             file="Source/ParameterQueue.hpp"/>
-      <FILE id="Ilvrbp" name="Switch.cpp" compile="1" resource="0" file="Source/Switch.cpp"/>
-      <FILE id="BVncoX" name="Switch.h" compile="0" resource="0" file="Source/Switch.h"/>
       <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
             file="Source/CircularBuffer.hpp"/>
       <FILE id="KsVqei" name="ReSample.hpp" compile="0" resource="0" file="Source/ReSample.hpp"/>
@@ -72,7 +73,8 @@
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="OrangeCrush20L"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="OrangeCrush20L"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="OrangeCrush20L" useRuntimeLibDLL="0"
+                       enablePluginBinaryCopyStep="1" vst3BinaryLocation="C:\VST3"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../modules"/>
