@@ -9,8 +9,9 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <cmath>
 
-//#define RESAMPLE
+#define RESAMPLE
 
 //==============================================================================
 OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
@@ -187,7 +188,8 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
-        buffer.applyGain(4.0f);
+        float inputGain = std::pow(10, parameters.getRawParameterValue("input")->load()/20.0f) * 3.0f;
+        buffer.applyGain(inputGain);
 
         
         stage1.processBlock(buffer);
@@ -225,8 +227,9 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 #endif
 
 
+        float outputGain = std::pow(10, parameters.getRawParameterValue("output")->load() / 20.0f) * 0.04f;
 
-        buffer.applyGain(0.02f);
+        buffer.applyGain(outputGain);
         //buffer.applyGain(0.2f);
     }
 
@@ -276,7 +279,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrangeCrush20LAudioProcessor
     std::make_unique<juce::AudioParameterFloat>("treble", "Treble", juce::NormalisableRange<float>(0.01f, 250000.0f, 0.5f, 0.3f), 25000.0f),
     std::make_unique<juce::AudioParameterFloat>("od", "Overdrive", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 6.58f), 0.01f),
     std::make_unique<juce::AudioParameterBool>("odButton", "Overdrive Button", false),
-    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 0.3f), 0.01f)
+    std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 0.3f), 0.01f),
+    std::make_unique<juce::AudioParameterFloat>("input", "Input Gain", juce::NormalisableRange<float>(-24.0f,12.0f,0.1f), 0.0f),
+    std::make_unique<juce::AudioParameterFloat>("output", "Output Gain",juce::NormalisableRange<float>(-12.0f,6.0f,0.1f), 0.0f)
     };
     return vtsParameterLayout;
 }

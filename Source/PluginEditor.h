@@ -65,5 +65,14 @@ private:
 
     ListenerSwitch powerLed;
 
+    Label inputGainLabel;
+    VerticalSlider inputGain;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inputGainAttachment;
+
+
+    Label outputGainLabel;
+    VerticalSlider outputGain;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputGainAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessorEditor)
 };

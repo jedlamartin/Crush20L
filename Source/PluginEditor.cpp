@@ -51,7 +51,22 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
 
     this->addAndMakeVisible(powerLed);
     powerButton.pushListener(&powerLed);
-    //powerLed.configure();
+
+    this->addAndMakeVisible(inputGain);
+    inputGainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "input", inputGain));
+    this->inputGain.setTextValueSuffix(" dB");
+    this->addAndMakeVisible(inputGainLabel);
+    inputGainLabel.setText("IN", juce::dontSendNotification);
+    inputGainLabel.setFont(juce::Font(17.0f));
+    inputGainLabel.attachToComponent(&inputGain, true);
+
+    this->addAndMakeVisible(outputGain);
+    outputGainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "output", outputGain));
+    this->outputGain.setTextValueSuffix(" dB");
+    this->addAndMakeVisible(outputGainLabel);
+    outputGainLabel.setText("OUT", juce::dontSendNotification);
+    outputGainLabel.setFont(juce::Font(17.0f));
+    outputGainLabel.attachToComponent(&outputGain, true);
 
     setSize (1000, 350);
 
@@ -71,8 +86,6 @@ void OrangeCrush20LAudioProcessorEditor::paint (juce::Graphics& g)
     else {
         g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     }
-
-    //g.drawRect(this->powerButton.getBounds());
 }
 
 void OrangeCrush20LAudioProcessorEditor::resized()
@@ -86,5 +99,7 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->volSlider.setBounds(292, 172, 70, 70);
     this->powerButton.setBounds(117, 170, 75, 75);
     this->powerLed.setBounds(205, 186, 40, 40);
+    this->inputGain.setBounds(50, this->getBottom() - 30, 100, 25);
+    this->outputGain.setBounds(215, this->getBottom() - 30, 100, 25);
 }
 

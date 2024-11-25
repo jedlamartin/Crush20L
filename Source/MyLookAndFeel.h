@@ -20,6 +20,7 @@ private:
 public:
     MyLookAndFeel();
     void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
+    void drawLinearSlider(juce::Graphics&, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, juce::Slider::SliderStyle, juce::Slider&) override;
     int getSliderPopupPlacement(juce::Slider&) override;
 };
 
@@ -32,6 +33,15 @@ public:
     void paint(juce::Graphics& g) override;
     juce::String getTextFromValue(double value) override;
     ~Knob();
+};
+
+class VerticalSlider : public juce::Slider {
+private:
+    MyLookAndFeel lookAndFeel;
+public:
+    VerticalSlider();
+    void paint(juce::Graphics& g) override;
+    ~VerticalSlider();
 };
 
 class Switch : public juce::ImageButton {
@@ -57,4 +67,12 @@ class ListenerSwitch : public Switch {
 public:
     ListenerSwitch(std::atomic<float>*position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
     void changeState() override;
+};
+
+class Label : public juce::Label {
+private:
+    MyLookAndFeel lookAndFeel;
+public:
+    Label();
+    ~Label();
 };
