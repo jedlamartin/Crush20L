@@ -15,6 +15,50 @@
 #include <JuceHeader.h>
 #include <cmath>
 
+
+
+
+template <int iSize, int N>
+class kaiserArray {
+private:
+    std::array<float, (N + 1)* iSize> kaiser;
+    const float beta;
+    const float M;
+public:
+    kaiserArray(float beta) :kaiser{ 0 }, beta(beta), M((N + 1)* iSize*2) {
+        for (int n = 0; n < (N + 1) * iSize; n++) {
+            float arg = beta * std::sqrt(1 - (2.0f * n / M) * (2.0f * n / M));
+            float num = besselI0(arg);
+            float den = besselI0(beta);
+            kaiser[n] = num / den;
+        }
+    };
+    float& operator[](int i) {
+        return kaiser[i < 0 ? -i : i];
+    }
+
+    size_t size() const {
+        return this->kaiser.size();
+    }
+
+    float besselI0(float x) {
+        const float epsilon = 1e-4f; // Pontossági határ
+        float sum = 1.0f;           // Sorösszeg
+        float term = 1.0f;          // Egyes tagok
+        float k = 1.0f;             // Iterációs változó
+        float factorial = 1.0f;     // Faktoriális kiszámítása
+
+        while (term > epsilon * sum) {
+            factorial *= k; // k! kiszámítása
+            term = std::pow(x / 2.0f, 2 * k) / (factorial * factorial); // Jelenlegi tag
+            sum += term;
+            k += 1.0f;
+        }
+
+        return sum;
+    }
+};
+
 template <int iSize, int N>
 class sincArray {
 private:
@@ -49,6 +93,13 @@ public:
     size_t size() const {
         return this->sinc.size();
     }
+
+    void applyKaiser(float beta) {
+        kaiserArray<iSize, N> kaiser(beta);
+        for (int i = 0; i < sinc.size(); i++) {
+            sinc[i] = sinc[i] * kaiser[i];
+        }
+    }
 };
 
 template <int iSize, int N>
@@ -63,6 +114,7 @@ private:
 public:
     void configure(double sampleRate){
         sinc.configure(static_cast<float>(sampleRate));
+        sinc.applyKaiser(5.0f);
         beginBuf.clear();
         endBuf.clear();
         decBeginBuf.clear();

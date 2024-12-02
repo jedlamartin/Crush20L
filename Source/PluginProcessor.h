@@ -17,7 +17,6 @@
 #include "Stage6.h"
 #include "ReSample.hpp"
 
-
 //==============================================================================
 /**
 */
@@ -87,7 +86,7 @@ private:
 
     juce::AudioProcessorValueTreeState parameters;
 
-    ReSample<2,100> resample;
+    ReSample<INT_SIZE,INT_POINTS> resample;
 
     Stage1 stage1;
     Stage2 stage2;

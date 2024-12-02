@@ -45,6 +45,7 @@ private:
 
 
 public:
+    Stage5();
     void processBlock(juce::AudioBuffer<float>& buffer) override;
     void configure(double sampleRate) override;
     void initParameters(std::atomic<float>* volParameter);

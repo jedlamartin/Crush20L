@@ -3,7 +3,7 @@
 <JUCERPROJECT id="tKwdRy" name="OrangeCrush20L" projectType="audioplug" useAppConfig="1"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="Zephyra" pluginFormats="buildAU,buildStandalone,buildVST3"
-              headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;">
+              headerPath="&quot;C:\Program Files\Common Files\asiosdk_2.3.3_2019-06-14\common&quot;&#10;&quot;C:\Program Files\Common Files\vcpkg\installed\x64-windows\include&quot;&#10;&quot;C:\Program Files\Common Files\vcpkg\installed\x64-windows\lib&quot;">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
       <FILE id="gyLRal" name="hardclip.txt" compile="0" resource="1" file="Assets/hardclip.txt"/>
@@ -73,7 +73,7 @@
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="OrangeCrush20L"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="OrangeCrush20L" useRuntimeLibDLL="0"
+        <CONFIGURATION isDebug="0" name="Release" targetName="OrangeCrush20L" useRuntimeLibDLL="1"
                        enablePluginBinaryCopyStep="1" vst3BinaryLocation="C:\VST3"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -92,5 +92,26 @@
         <MODULEPATH id="juce_dsp" path="../../modules"/>
       </MODULEPATHS>
     </VS2022>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Program Files\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\Program Files\JUCE\modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
   </EXPORTFORMATS>
 </JUCERPROJECT>

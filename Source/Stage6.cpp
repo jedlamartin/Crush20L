@@ -10,6 +10,12 @@
 
 #include "Stage6.h"
 
+#ifdef RESAMPLE
+Stage6::Stage6():Stage(true), cutOffVoltage(24.0f){}
+#else
+Stage6::Stage6() :Stage(false), cutOffVoltage(24.0f) {}
+#endif
+
 void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
     //y[k]=Ay[k-1]+Bu[k]+Cu[k-1]
     int channelNumber = buffer.getNumChannels();
@@ -27,6 +33,19 @@ void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
             float tmp = channelSamples[i];
 
             channelSamples[i] = A * yBuffer[channel] + B * channelSamples[i] + C * uBuffer[channel];
+            
+            //Cutoff
+            if (channelSamples[i] > this->cutOffVoltage) {
+                channelSamples[i] = this->cutOffVoltage;
+                tmp = (this->cutOffVoltage - A * yBuffer[channel] - C * uBuffer[channel]) / B;
+            }
+            else if (channelSamples[i] < -this->cutOffVoltage) {
+                channelSamples[i] = -this->cutOffVoltage;
+                tmp = (-this->cutOffVoltage - A * yBuffer[channel] - C * uBuffer[channel]) / B;
+            }
+            
+            
+            
             this->yBuffer[channel] = channelSamples[i];
             this->uBuffer[channel] = tmp;
 
@@ -40,7 +59,8 @@ void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
 
 void Stage6::configure(double sampleRate){
 
-    float T = static_cast<float>(1 / sampleRate);
+    this->sampleRate = static_cast<float>(sampleRate) * (this->resampled ? INT_SIZE : 1);
+    float T = 1 / this->sampleRate;
 
     float G = 1 / (517 + 25000 * T);
     this->A = -(25000 * T - 517) * G;

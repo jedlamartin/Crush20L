@@ -9,6 +9,11 @@
 */
 
 #include "Stage5.h"
+#ifdef RESAMPLE
+Stage5::Stage5():Stage(true){}
+#else
+Stage5::Stage5() : Stage(false) {}
+#endif
 
 void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
     if (!crossfade.isSmoothing()) {
@@ -99,8 +104,8 @@ void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
 
 void Stage5::configure(double sampleRate){
 
-
-    float T = static_cast<float>(1 / sampleRate);
+    this->sampleRate = static_cast<float>(sampleRate) * (this->resampled ? INT_SIZE : 1);
+    float T = 1 / this->sampleRate;
     float V2 = *this->volParameter;
     float V1 = 50000.0f + 0.01f - V2;
 

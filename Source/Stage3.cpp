@@ -64,9 +64,9 @@ static std::array<float, 4> matrixMul(const std::array<float, 4>& A, float B) {
 static std::array<float, 4> matrixAdd(const std::array<float, 4>& A, const std::array<float, 4>& B) {
     std::array<float, 4> C;
     C[0] = A[0] + B[0];
-    C[0] = A[1] + B[1];
-    C[0] = A[2] + B[2];
-    C[0] = A[3] + B[3];
+    C[1] = A[1] + B[1];
+    C[2] = A[2] + B[2];
+    C[3] = A[3] + B[3];
     return C;
 }
 
@@ -209,7 +209,7 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
     else if (x > xArray[size - 1]) {
         return yArray[size - 1];
     }
-    int i = 0, j = size, mid = 0;
+    int i = 0, j = static_cast<int>(size), mid = 0;
     while (i < j) {
         mid = (i + j) / 2;
 
@@ -240,12 +240,13 @@ static float closestElementLinearInterpolate(const float x, const std::vector<fl
 }
 
 void Stage3::configure(double sampleRate) {
+    this->sampleRate = static_cast<float>(sampleRate) * (this->resampled ? INT_SIZE : 1);
+    float T = 1 / this->sampleRate;
+    float h = static_cast<float>(2 * this->sampleRate);
 
-    float h = static_cast<float>(2 * sampleRate);
-
-    float R22 = 47000;
-    float R33 = 6800;
-    float R34 = 1000;
+    const double R22 = 47000;
+    const float R33 = 6800;
+    const float R34 = 1000;
     float R37; //PARAMETER
     if (*this->odButton > 0.5) {
         R37 = 50000.0f + 0.01f - *this->odParameter;
@@ -253,15 +254,14 @@ void Stage3::configure(double sampleRate) {
     else {
         R37 = 100000;
     }
-    float C12 = 220e-9f;
-    float C18 = 470e-12f;
-    float E13 = 2.2e-6f;
-    float E14 = 2.2e-6f;
+    const float C12 = 220e-9f;
+    const float C18 = 470e-12f;
+    const float E13 = 2.2e-6f;
+    const float E14 = 2.2e-6f;
 
     std::array<float, 16> A{ 0.0f };
     std::array<float, 4> B{ 0.0f };
     std::array<float, 4> C{ 0.0f };
-    float F;
 
 
     A[0] = -1 / (C12 * (R37 + R34)) - 1 / (C12 * R33);
@@ -297,7 +297,7 @@ void Stage3::configure(double sampleRate) {
     this->D[3] = 1;
 
     this->E = R34 / (R34 + R37);
-    F = -R34 * R37 / (R37 + R34);
+    const float F = -R34 * R37 / (R37 + R34);
 
     const std::array<float, 16> I { h,0,0,0,0,h,0,0,0,0,h,0,0,0,0,h };
     std::array<float, 16> IhmA{0};
@@ -375,9 +375,11 @@ void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>*
     this->p.resize(this->x.size());
     this->pSat.resize(this->x.size());
 }
-
-Stage3::Stage3():Stage(), R35(2700.0f), cutOffVoltage(TL072_CUTOFF){}
-
+#ifdef RESAMPLE
+Stage3::Stage3():Stage(true), R35(2700.0f), cutOffVoltage(TL072_CUTOFF){}
+#else
+Stage3::Stage3(): Stage(false), R35(2700.0f), cutOffVoltage(TL072_CUTOFF){}
+#endif
 void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
 
     int channelNumber = buffer.getNumChannels();
@@ -394,7 +396,7 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
 
             if (std::abs((channelSamples[i]) > std::abs(this->maxInput)))
                 this->maxInput = channelSamples[i];
-
+            float tmp = channelSamples[i];
             std::array<float, 4> Hw = matrixMul(H, w[channel]);
             std::array<float, 4> Ju = matrixMul(J, channelSamples[i] + uBuffer[channel]);
             std::array<float, 4> Gy = matrixMul(G, yBuffer[channel]);
@@ -434,6 +436,7 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
 
                 this->uBuffer[channel] = cutOffVoltage-w[channel][1];
                 channelSamples[i] = cutOffVoltage + w[channel][3] - R35 * yBuffer[channel];
+                //channelSamples[i] = cutOffVoltage;
 
 
 
@@ -441,6 +444,7 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
             else {
                 this->uBuffer[channel] = channelSamples[i];
                 channelSamples[i] = w[channel][1] + w[channel][3] + channelSamples[i] - R35 * yBuffer[channel];
+                //channelSamples[i] = w[channel][1] + channelSamples[i];
 
             }
             //this->uBuffer[channel] = channelSamples[i];

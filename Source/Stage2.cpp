@@ -10,7 +10,12 @@
 
 #include "Stage2.h"
 
-Stage2::Stage2():Stage(), cutOffVoltage(TL072_CUTOFF){}
+#ifdef RESAMPLE
+    Stage2::Stage2() :Stage(true), cutOffVoltage(TL072_CUTOFF) {}
+#else
+    Stage2::Stage2() : Stage(false), cutOffVoltage(TL072_CUTOFF) {}
+#endif
+
 
 void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 {
@@ -112,8 +117,9 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
 }
 
 void Stage2::configure(double sampleRate) {
-
-    float T = 1 / sampleRate;
+    
+    this->sampleRate = static_cast<float>(sampleRate) * (this->resampled ? INT_SIZE : 1);
+    float T = 1 / this->sampleRate;
     float G2 = *this->gainParameter;
     float G1 = 10000.01f - G2;
 

@@ -10,6 +10,7 @@ private:
 	std::vector<CircularBuffer<float, 2>> uBuffer;
 	float maxInput, maxOutput;
 public:
+	Stage1();
 	void processBlock(juce::AudioBuffer<float>& buffer) override;
 	void configure(double sampleRate) override;
 };

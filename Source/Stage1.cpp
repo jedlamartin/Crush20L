@@ -1,6 +1,9 @@
 #include <JuceHeader.h>
 #include "Stage1.h"
 
+
+Stage1::Stage1():Stage(false){}
+
 void Stage1::processBlock(juce::AudioBuffer<float>& buffer) {
 	int channelNumber = buffer.getNumChannels();
 	this->yBuffer.resize(channelNumber, CircularBuffer<float, 2>{0.0f});
@@ -28,7 +31,7 @@ void Stage1::processBlock(juce::AudioBuffer<float>& buffer) {
 }
 
 void Stage1::configure(double sampleRate) {
-	this->sampleRate = static_cast<float>(sampleRate);
+	this->sampleRate = static_cast<float>(sampleRate) * (this->resampled ? INT_SIZE : 1);
 	float T = 1 / this->sampleRate;
 	float G = static_cast<float>(1 / (5629499.534213120000000 * T * T + 554097.002453808513024 * T + 4.974225788430713));
 	this->A = static_cast<float>(-(11258999.068426240000000 * T * T - 9.948451576861426) * G);
