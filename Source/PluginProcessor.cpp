@@ -186,25 +186,25 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
 
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
-        //float inputGain = std::pow(10, parameters.getRawParameterValue("input")->load()/20.0f) * 3.0f;
-        //buffer.applyGain(inputGain);
-        //buffer.applyGain(0.5f);
+        float inputGain = std::pow(10, parameters.getRawParameterValue("input")->load()/20.0f) * 3.0f;
+        buffer.applyGain(inputGain);
+        //buffer.applyGain(6.0f);
 
 
-        //stage1.processBlock(buffer);
+        stage1.processBlock(buffer);
 
 #ifdef RESAMPLE
         resample.interpolate(buffer);
 
 
-        /*resample.process([this](juce::AudioBuffer<float>& buffer) {
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage2.processBlock(buffer);
-            });*/
+            });
         //ezt tesztelni kell hogy jó legyen
         resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage3.processBlock(buffer);
             });
-        /*resample.process([this](juce::AudioBuffer<float>& buffer) {
+        resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage4.processBlock(buffer);
             });
         resample.process([this](juce::AudioBuffer<float>& buffer) {
@@ -212,23 +212,23 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             });
         resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage6.processBlock(buffer);
-            });*/
+            });
 
             
         resample.decimate(buffer);
 
 #else 
-        //stage2.processBlock(buffer);
+        stage2.processBlock(buffer);
         stage3.processBlock(buffer);
-        //stage4.processBlock(buffer);
-        //stage5.processBlock(buffer);
-        //stage6.processBlock(buffer);
+        stage4.processBlock(buffer);
+        stage5.processBlock(buffer);
+        stage6.processBlock(buffer);
 #endif
 
 
-        //float outputGain = std::pow(10, parameters.getRawParameterValue("output")->load() / 20.0f) * 0.04f;
+        float outputGain = std::pow(10, parameters.getRawParameterValue("output")->load() / 20.0f) * 0.04f;
 
-        //buffer.applyGain(outputGain);
+        buffer.applyGain(outputGain);
         //buffer.applyGain(0.06f);
     }
 

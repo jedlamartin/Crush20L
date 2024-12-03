@@ -28,10 +28,10 @@ private:
 	ParameterQueue<ParameterSet4> updatedParameters;
 	juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> crossfade{ 1.0f };
 
-	std::vector<CircularBuffer<float, 4>> yBuffer;
-	std::vector<CircularBuffer<float, 4>> uBuffer;
-	std::vector<CircularBuffer<float, 4>> yUBuffer;
-	std::vector<CircularBuffer<float, 4>> uUBuffer;
+	std::vector<CircularBuffer<double, 4>> yBuffer;
+	std::vector<CircularBuffer<double, 4>> uBuffer;
+	std::vector<CircularBuffer<double, 4>> yUBuffer;
+	std::vector<CircularBuffer<double, 4>> uUBuffer;
 
 
 	std::atomic<float>* bassParameter = nullptr;
