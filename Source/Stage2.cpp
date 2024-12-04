@@ -1,20 +1,7 @@
-/*
-  ==============================================================================
-
-    Stage2.cpp
-    Created: 19 Apr 2024 8:45:49pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #include "Stage2.h"
 
-#ifdef RESAMPLE
-    Stage2::Stage2() :Stage(true), cutOffVoltage(TL072_CUTOFF) {}
-#else
-    Stage2::Stage2() : Stage(false), cutOffVoltage(TL072_CUTOFF) {}
-#endif
+Stage2::Stage2() :Stage(true), cutOffVoltage(TL072_CUTOFF) {}
+
 
 
 void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
@@ -63,10 +50,6 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             float yUpdate = updatedParams.A * yUBuffer[channel][0] + updatedParams.B * yUBuffer[channel][1] + updatedParams.C * channelSamples[i] + updatedParams.D * uUBuffer[channel][0] + updatedParams.E * uUBuffer[channel][1];
             
 
-            if (std::abs(yCurrent) > std::abs(this->maxBetween) || std::abs(yUpdate) > std::abs(this->maxBetween))
-                this->maxBetween = yCurrent > yUpdate ? yCurrent : yUpdate;
-
-            //Cutoff
             if (yCurrent > this->cutOffVoltage) {
                 yCurrent = this->cutOffVoltage;
                 tmp = (this->cutOffVoltage - params.A * yBuffer[channel][0] - params.B * yBuffer[channel][1] - params.D * uBuffer[channel][0] - params.E * uBuffer[channel][1]) / params.C;
@@ -92,10 +75,6 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             this->uUBuffer[channel].push(tmpU);
 
 
-        
-
-
-            //RC
             tmp = yCurrent;
             tmpU = yUpdate;
             yCurrent = params.F * yRCBuffer[channel] + params.G * yCurrent + params.H * uRCBuffer[channel];
@@ -110,8 +89,6 @@ void Stage2::processBlock(juce::AudioBuffer<float>& buffer)
             channelSamples[i] = mult * yCurrent + (1.0f - mult) * yUpdate;
             this->crossfade.getNextValue();
 
-            if(std::abs(channelSamples[i])>std::abs(this->maxOutput))
-                this->maxOutput = channelSamples[i];
         }
     }
 }
@@ -143,7 +120,5 @@ void Stage2::configure(double sampleRate) {
 
 void Stage2::initParameters(std::atomic<float>* gainParameter) {
     this->gainParameter = gainParameter;
-    this->crossfade.reset(CROSSFADE_SAMPLES);
-    this->maxOutput  = this->maxBetween = 0.0f;
-    
+    this->crossfade.reset(CROSSFADE_SAMPLES);  
 }

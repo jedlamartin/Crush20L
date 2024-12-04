@@ -3,7 +3,6 @@
 #include <vector>
 #include "JuceHeader.h"
 
-#define RESAMPLE
 
 #define TL072_CUTOFF 13.45f
 #define CROSSFADE_SAMPLES 14400

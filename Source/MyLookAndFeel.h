@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    Knob.h
-    Created: 24 Nov 2024 5:30:03pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #pragma once
 #include "JuceHeader.h"
 #include <vector>
@@ -26,7 +16,6 @@ public:
 
 class Knob :public juce::Slider {
 private:
-    //juce::RangedAudioParameter* param; //https://forum.juce.com/t/getrawparametervalue-vs-getparameter/38395
     MyLookAndFeel lookAndFeel;
 public:
     Knob();

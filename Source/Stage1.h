@@ -8,7 +8,6 @@ private:
 	float A, B, C, D;
 	std::vector<CircularBuffer<float, 2>> yBuffer;
 	std::vector<CircularBuffer<float, 2>> uBuffer;
-	float maxInput, maxOutput;
 public:
 	Stage1();
 	void processBlock(juce::AudioBuffer<float>& buffer) override;

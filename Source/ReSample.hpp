@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    ReSample.h
-    Created: 14 May 2024 10:45:12pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <vector>
@@ -67,7 +57,6 @@ public:
     sincArray() :sinc{ 0 } {}
 
     float& operator[](int i) {
-        //int index = i < 0 ? -i + 1 : i;
         return sinc[i < 0 ? -i : i];
     }
 
@@ -168,12 +157,8 @@ public:
             beginBuf[channel].push(channelSamples[originalBufSize - 1]);
             //endbuf feltoltese ha kesz minden
             for (int i = 0; i < N; i++) {
-                //DBG(x.getNumSamples());
-                //DBG(buffer.getNumSamples());
-                //DBG(channelSamples[channelSize - 1 + i]);
                 endBuf[channel].push(channelSamples[originalBufSize + i]);
             }
-            //DBG("\n\n");
         }
 
 
@@ -192,15 +177,9 @@ public:
             float* currentSample = x.getWritePointer(channel);
             for (int i = 0; i < N * iSize; i++) {
                 currentSample[N * iSize - i - 1] = decEndBuf[channel][i];
-                //DBG("i:" << i << " val:" << currentSample[i]);
             }
         }
-        /*for (int channel = 0; channel < channelSize; channel++) {
-            float* currentSample = x.getWritePointer(channel);
-            for (int i = 0; i < N * iSize; i++) {
-                DBG("i:" << i << " val:" << currentSample[i]);
-            }
-        }*/
+
 
         for (int channel = 0; channel < channelSize; channel++) {
             float const* iSamples = x.getReadPointer(channel);

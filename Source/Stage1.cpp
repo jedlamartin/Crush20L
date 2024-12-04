@@ -14,16 +14,11 @@ void Stage1::processBlock(juce::AudioBuffer<float>& buffer) {
 		auto channelSamples=buffer.getWritePointer(channel);
 		for (int i = 0; i < buffer.getNumSamples(); i++) {
 			float tmp = channelSamples[i];
-			if (std::abs(maxInput) < std::abs(tmp)) {
-				maxInput = tmp;
-			}
+
 			channelSamples[i] = this->A * this->yBuffer[channel][0] + this->B * this->yBuffer[channel][1] + this->C * channelSamples[i] + this->D * this->uBuffer[channel][1];
 			this->yBuffer[channel].push(channelSamples[i]);
 			this->uBuffer[channel].push(tmp);
 
-			if (std::abs(maxOutput) < std::abs(channelSamples[i])) {
-				maxOutput = channelSamples[i];
-			}
 		}
 	}
 
@@ -38,7 +33,6 @@ void Stage1::configure(double sampleRate) {
 	this->B = static_cast<float>(-(5629499.534213120000000 * T * T - 554097.002453808513024 * T + 4.974225788430713) * G);
 	this->C = static_cast<float>(529172.956216033345536 * T * G);
 	this->D = static_cast<float>(-529172.956216033345536 * T * G);
-	maxInput = maxOutput = 0.0f;
 }
 
 

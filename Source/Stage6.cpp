@@ -1,20 +1,6 @@
-/*
-  ==============================================================================
-
-    Stage6.cpp
-    Created: 11 May 2024 4:45:47pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #include "Stage6.h"
 
-#ifdef RESAMPLE
 Stage6::Stage6():Stage(true), cutOffVoltage(24.0f){}
-#else
-Stage6::Stage6() :Stage(false), cutOffVoltage(24.0f) {}
-#endif
 
 void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
     //y[k]=Ay[k-1]+Bu[k]+Cu[k-1]
@@ -25,10 +11,6 @@ void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
     for (int channel = 0; channel < channelNumber; channel++) {
         float* channelSamples = buffer.getWritePointer(channel);
         for (int i = 0; i < buffer.getNumSamples(); i++) {
-
-            if (std::abs(maxInput) < std::abs(channelSamples[i])) {
-                maxInput = channelSamples[i];
-            }
 
             float tmp = channelSamples[i];
 
@@ -49,9 +31,6 @@ void Stage6::processBlock(juce::AudioBuffer<float>& buffer){
             this->yBuffer[channel] = channelSamples[i];
             this->uBuffer[channel] = tmp;
 
-            if (std::abs(maxOutput) < std::abs(channelSamples[i])) {
-                maxOutput = channelSamples[i];
-            }
         }
     }
 
@@ -66,5 +45,4 @@ void Stage6::configure(double sampleRate){
     this->A = -(25000 * T - 517) * G;
     this->B = (24717 + 25000 * T) * G;
     this->C = (25000 * T - 24717) * G;
-    maxInput = maxOutput = 0;
 }

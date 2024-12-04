@@ -1,20 +1,4 @@
-/*
-  ==============================================================================
-
-    Stage3.cpp
-    Created: 21 Apr 2024 5:02:14pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #include "Stage3.h"
-
-template <typename T, size_t cols, size_t rows>
-class Matrix {
-private:
-    std::array<T, cols * rows> arr;
-};
 
 static std::array<float, 4> matrixMul(const std::array<float, 16>& A, const std::array<float, 4>& B) {
     std::array<float, 4> C;
@@ -265,26 +249,16 @@ void Stage3::configure(double sampleRate) {
 
 
     A[0] = -1 / (C12 * (R37 + R34)) - 1 / (C12 * R33);
-    //A[1] = 0;
     A[2] = -1 / (C12 * (R37 + R34));
-    //A[3] = 0;
     A[4] = 1 / (C18 * (R37 + R34));
     A[5] = -1 / (R22 * C18);
     A[6] = 1 / (C18 * (R37 + R34));
-    //A[7] = 0;
     A[8] = -1 / (E13 * (R37 + R34));
-    //A[9] = 0;
     A[10] = -1 / (E13 * (R37 + R34));
-    //A[11] = 0;
-    //A[12] = 0;
-    //A[13] = 0;
-    //A[14] = 0;
-    //A[15] = 0;
 
     B[0] = -1 / (C12 * (R37 + R34));
     B[1] = 1 / (C18 * (R37 + R34));
     B[2] = -1 / (E13 * (R37 + R34));
-    //B[3] = 0;
 
     C[0] = R37 / (C12 * (R37 + R34));
     C[1] = -R37 / (C18 * (R37 + R34));
@@ -320,23 +294,10 @@ void Stage3::configure(double sampleRate) {
 
 
     // saturation parameters
-    //A[0] = -1 / (C12 * (R37 + R34)) - 1 / (C12 * R33);
     A[1] = 1 / (C12 * (R37 + R34));
-    //A[2] = -1 / (C12 * (R37 + R34));
-    //A[3] = 0;
-    //A[4] = 1 / (C18 * (R37 + R34));
     A[5] = -1 / (R22 * C18) - 1 / (C18 * (R37 + R34));
-    //A[6] = 1 / (C18 * (R37 + R34));
-    //A[7] = 0;
-    //A[8] = -1 / (E13 * (R37 + R34));
     A[9] = 1 / (E13 * (R34 + R37));
-    //A[10] = -1 / (E13 * (R37 + R34));
-    //A[11] = 0;
-    //A[12] = 0;
-    //A[13] = 0;
-    //A[14] = 0;
-    //A[15] = 0;
-
+    
     this->DSat[0] = -R37 / (R37 + R34);
     this->DSat[1] = R37 / (R37 + R34);
     this->DSat[2] = -R37 / (R37 + R34);
@@ -361,10 +322,7 @@ void Stage3::configure(double sampleRate) {
 void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>* odButton) {
     this->odParameter = odParameter;
     this->odButton = odButton;
-    this->wMax = 0;
-    this->maxInput = 0;
-    this->maxOutput = 0;
-
+    
     juce::StringArray hardclip(juce::StringArray::fromLines(BinaryData::hardclip_txt));
     for (juce::String i : hardclip) {
         float x = i.substring(0, i.indexOfChar('\t')).getFloatValue();
@@ -375,11 +333,8 @@ void Stage3::initParameters(std::atomic<float>* odParameter, std::atomic<float>*
     this->p.resize(this->x.size());
     this->pSat.resize(this->x.size());
 }
-#ifdef RESAMPLE
 Stage3::Stage3():Stage(true), R35(2700.0f), cutOffVoltage(TL072_CUTOFF){}
-#else
-Stage3::Stage3(): Stage(false), R35(2700.0f), cutOffVoltage(TL072_CUTOFF){}
-#endif
+
 void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
 
     int channelNumber = buffer.getNumChannels();
@@ -394,8 +349,6 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
         auto channelSamples = buffer.getWritePointer(channel);
         for (int i = 0; i < buffer.getNumSamples(); i++) {
 
-            if (std::abs((channelSamples[i]) > std::abs(this->maxInput)))
-                this->maxInput = channelSamples[i];
             float tmp = channelSamples[i];
             std::array<float, 4> Hw = matrixMul(H, w[channel]);
             std::array<float, 4> Ju = matrixMul(J, channelSamples[i] + uBuffer[channel]);
@@ -410,8 +363,8 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
             Gy = matrixMul(G, yBuffer[channel]);
             wSave = w[channel];
             w[channel] = matrixAdd(Gy, pk);
-            if (std::abs((channelSamples[i] + w[channel][1])) > std::abs(this->wMax))
-                this->wMax = channelSamples[i] + w[channel][1];
+            
+            //saturation
             if (channelSamples[i] + w[channel][1] > this->cutOffVoltage || channelSamples[i] + w[channel][1] < -this->cutOffVoltage) {
                 float cutOffVoltage;
                 if (channelSamples[i] + w[channel][1] > this->cutOffVoltage){
@@ -436,21 +389,15 @@ void Stage3::processBlock(juce::AudioBuffer<float>& buffer) {
 
                 this->uBuffer[channel] = cutOffVoltage-w[channel][1];
                 channelSamples[i] = cutOffVoltage + w[channel][3] - R35 * yBuffer[channel];
-                //channelSamples[i] = cutOffVoltage;
-
+        
 
 
             }
             else {
                 this->uBuffer[channel] = channelSamples[i];
                 channelSamples[i] = w[channel][1] + w[channel][3] + channelSamples[i] - R35 * yBuffer[channel];
-                //channelSamples[i] = w[channel][1] + channelSamples[i];
-
             }
-            //this->uBuffer[channel] = channelSamples[i];
-            //channelSamples[i] = w[channel][1] + w[channel][3] + channelSamples[i] - R35 * yBuffer[channel];
-            if (std::abs((channelSamples[i]) > std::abs(this->maxOutput)))
-                this->maxOutput = channelSamples[i];
+
 
         }
     }

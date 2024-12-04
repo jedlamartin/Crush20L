@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    Stage4.h
-    Created: 24 Apr 2024 5:06:36pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #pragma once
 #include <queue>
 #include "Stage.h"
@@ -22,7 +12,6 @@ struct ParameterSet4 {
 
 class Stage4 :public Stage {
 private:
-	//double A, B, C, D, E, F, G, H, I;
 	ParameterSet4 params;
 	ParameterSet4 updatedParams;
 	ParameterQueue<ParameterSet4> updatedParameters;

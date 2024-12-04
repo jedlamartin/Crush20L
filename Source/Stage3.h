@@ -3,11 +3,6 @@
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 
-/*struct ParameterSet {
-	double G, H, J, D, E, K, G, H, I;
-	ParameterSet() :A(0.0), B(0.0), C(0.0), D(0.0), E(0.0), F(0.0), G(0.0), H(0.0), I(0.0) {}
-};*/
-
 class Stage3 :public Stage {
 private:
 	std::array<float, 4> G;
@@ -40,9 +35,6 @@ private:
 	std::atomic<float>* odButton = nullptr;
 	const float R35;
 	const float cutOffVoltage;
-	float wMax;
-	float maxInput;
-	float maxOutput;
 
 public:
 	Stage3();

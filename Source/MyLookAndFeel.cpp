@@ -1,16 +1,6 @@
-/*
-  ==============================================================================
-
-    Knob.cpp
-    Created: 24 Nov 2024 5:30:19pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #include "MyLookAndFeel.h"
 
-Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
+Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, NoTextBox) {
     this->setLookAndFeel(&this->lookAndFeel);
     this->setPopupDisplayEnabled(true, false, nullptr);
 }
@@ -19,10 +9,8 @@ void Knob::paint(juce::Graphics& g) {
     this->lookAndFeel.drawRotarySlider(g, this->getLocalBounds().getX(), this->getLocalBounds().getY(), this->getLocalBounds().getWidth(), this->getLocalBounds().getHeight(), this->getNormalisableRange().convertTo0to1(this->getValue()), 0.0f, 360.0f, *this);
 }
 
-juce::String Knob::getTextFromValue(double value)
-{
-    //return juce::String((this->getNormalisableRange().convertTo0to1(value)) * 10.0f, 1);
-    return juce::String(this->getValue());
+juce::String Knob::getTextFromValue(double value){
+    return juce::String((this->getNormalisableRange().convertTo0to1(value)) * 10.0f, 1);
 }
 
 Knob::~Knob() {
@@ -89,7 +77,6 @@ void MyLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width,
         g.setColour(slider.findColour(juce::Slider::trackColourId));
         g.strokePath(valueTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
 
-        //g.setColour(slider.findColour(juce::Slider::thumbColourId));
         juce::ColourGradient thumbGradient(slider.findColour(juce::Slider::thumbColourId).contrasting(), maxPoint - juce::Point<float>(thumbWidth / 2, 0), slider.findColour(juce::Slider::thumbColourId), maxPoint - juce::Point<float>(0.7f * thumbWidth / 2, 0), true);
         g.setGradientFill(thumbGradient);
         g.fillEllipse(juce::Rectangle<float>(static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre(maxPoint));
@@ -116,12 +103,10 @@ Switch::Switch(std::atomic<float>* position, const void* imageOffData, int image
 
 void Switch::changeState() {
     if (!this->getToggleState()) {
-        //this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
         this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOffData, imageOffSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
         this->repaint();
     }
     else {
-        //this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
         this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOnData, imageOnSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
         this->repaint();
     }

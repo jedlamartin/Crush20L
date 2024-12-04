@@ -1,22 +1,8 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "MyLookAndFeel.h"
-
-//==============================================================================
-/**
-*/
-
-
 
 
 
@@ -25,13 +11,10 @@ public:
     OrangeCrush20LAudioProcessorEditor(OrangeCrush20LAudioProcessor&, juce::AudioProcessorValueTreeState&);
     ~OrangeCrush20LAudioProcessorEditor() override;
 
-    //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     OrangeCrush20LAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
 

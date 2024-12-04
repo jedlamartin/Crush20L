@@ -13,7 +13,6 @@ struct ParameterSet2 {
 
 class Stage2 : public Stage {
 private:
-	//float A, B, C, D, E, F, G, H;
 	ParameterSet2 params;
 	ParameterSet2 updatedParams;
 	ParameterQueue<ParameterSet2> updatedParameters;
@@ -31,8 +30,6 @@ private:
 	std::vector<float> uURCBuffer;
 
 	const float cutOffVoltage;
-	float maxOutput;
-	float maxBetween;
 
 public:
 	Stage2();

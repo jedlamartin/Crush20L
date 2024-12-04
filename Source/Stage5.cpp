@@ -1,25 +1,11 @@
-/*
-  ==============================================================================
-
-    Stage5.cpp
-    Created: 11 May 2024 12:49:03pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #include "Stage5.h"
-#ifdef RESAMPLE
+
 Stage5::Stage5():Stage(true){}
-#else
-Stage5::Stage5() : Stage(false) {}
-#endif
 
 void Stage5::processBlock(juce::AudioBuffer<float>& buffer){
     if (!crossfade.isSmoothing()) {
         ParameterSet5 updt;
         if (updatedParameters.read_and_pop(updt)) {
-            //DBG("Changed!\n");
             if (crossfade.getTargetValue() == 1.0f) {
                 updatedParams = updt;
                 yUBuffer.clear();
