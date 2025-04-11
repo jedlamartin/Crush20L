@@ -39,6 +39,11 @@ MyLookAndFeel::MyLookAndFeel() :LookAndFeel_V4() {
     this->setColour(juce::Slider::trackColourId, juce::Colours::black);
     this->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     this->setColour(juce::Label::textColourId, juce::Colours::black);
+    this->setColour(juce::ComboBox::backgroundColourId, juce::Colours::transparentWhite);
+    this->setColour(juce::ComboBox::textColourId, juce::Colours::black);
+    this->setColour(juce::PopupMenu::backgroundColourId, juce::Colours::transparentWhite);
+    this->setColour(juce::PopupMenu::textColourId, juce::Colours::black);
+    
 }
 
 void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) {
@@ -100,8 +105,7 @@ void MyLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width,
     
 }
 
-int MyLookAndFeel::getSliderPopupPlacement(juce::Slider&)
-{
+int MyLookAndFeel::getSliderPopupPlacement(juce::Slider&) {
     return juce::BubbleComponent::BubblePlacement::above;
 }
 
@@ -176,4 +180,41 @@ Label::Label():juce::Label(){
 }
 Label::~Label() {
     this->setLookAndFeel(nullptr);
+}
+
+
+CabButton::CabButton(juce::RangedAudioParameter* position){
+    juce::AudioParameterChoice* positionDC = dynamic_cast<juce::AudioParameterChoice*>(position);
+    this->setLookAndFeel(&lookAndFeel);
+    this->popup.setLookAndFeel(&lookAndFeel);
+
+    this->popup.addItem(1, juce::String("Matched cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize));
+    this->popup.addItem(2, juce::String("No cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize));
+    this->popup.addItem(3, juce::String("Load custom IR..."), true, false, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize));
+
+    if (static_cast<int>(*positionDC) == 1) {
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+    }
+    else if (static_cast<int>(*positionDC) == 2) {
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+    }
+    else {
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+    }
+
+    this->onClick = [this]() {
+        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this), [this](int res) {});
+    };
+}
+
+
+//void CabButton::setVisible(bool shouldBeVisible){
+//    //Component::setVisible(shouldBeVisible);
+//    this->button.setBounds(this->getBounds());
+//    this->button.setVisible(shouldBeVisible);
+//}
+
+CabButton::~CabButton(){
+    this->setLookAndFeel(nullptr);
+    this->popup.setLookAndFeel(nullptr);
 }

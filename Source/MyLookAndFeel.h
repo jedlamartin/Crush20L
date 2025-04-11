@@ -76,3 +76,16 @@ public:
     Label();
     ~Label();
 };
+
+
+//nem komboboxbol kell csinálni, hanem sajat classbol
+class CabButton : public juce::ImageButton { // lehetne a switchnek a leszarmazottja{
+private:
+    MyLookAndFeel lookAndFeel;
+    juce::PopupMenu popup;
+public:
+    CabButton(juce::RangedAudioParameter* position);
+    ~CabButton();
+};
+
+//class CabButtonAttachment : ezt kell jol megirni hogy mukodjon a parameterrel

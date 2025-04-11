@@ -15,8 +15,8 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts), 
     powerButton(vts.getRawParameterValue("power"), BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize, BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize),
     odButton(vts.getRawParameterValue("odButton"), BinaryData::odbutton_off_png, BinaryData::odbutton_off_pngSize, BinaryData::odbutton_on_png, BinaryData::odbutton_on_pngSize),
-    powerLed(vts.getRawParameterValue("power"), BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize)
-
+    powerLed(vts.getRawParameterValue("power"), BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize),
+    cabButton(vts.getParameter("cabButton"))
 {
     this->background = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
 
@@ -68,6 +68,9 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     outputGainLabel.setFont(juce::Font(17.0f));
     outputGainLabel.attachToComponent(&outputGain, true);
 
+    this->addAndMakeVisible(cabButton);
+    //cabButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "cabButton", cabButton));
+
     setSize (1000, 350);
 
 }
@@ -101,5 +104,6 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->powerLed.setBounds(205, 186, 40, 40);
     this->inputGain.setBounds(50, this->getBottom() - 30, 100, 25);
     this->outputGain.setBounds(215, this->getBottom() - 30, 100, 25);
+    this->cabButton.setBounds(0, 0, 200, 50);
 }
 

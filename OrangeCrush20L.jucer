@@ -7,6 +7,9 @@
               cppLanguageStandard="latest">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="s9b0Ix" name="cab.png" compile="0" resource="1" file="Assets/cab.png"/>
+      <FILE id="C2r17Y" name="ir.png" compile="0" resource="1" file="Assets/ir.png"/>
+      <FILE id="L4e5In" name="nocab.png" compile="0" resource="1" file="Assets/nocab.png"/>
       <FILE id="gyLRal" name="hardclip.txt" compile="0" resource="1" file="Assets/hardclip.txt"/>
       <FILE id="SwkWMp" name="led_off.png" compile="0" resource="1" file="Assets/led_off.png"/>
       <FILE id="h2G2qx" name="led_on.png" compile="0" resource="1" file="Assets/led_on.png"/>
@@ -73,9 +76,7 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="OrangeCrush20L" headerPath="&quot;C:\Users\Martin\Downloads\MPIR-Binary\include&quot;"
-                       libraryPath="&quot;C:\Users\Martin\Downloads\MPIR-Binary\lib\MD\x64\Debug&quot;"
-                       extraLinkerFlags="&quot;mpir.lib&quot;"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="OrangeCrush20L"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="OrangeCrush20L" enablePluginBinaryCopyStep="1"
                        vst3BinaryLocation="C:\VST3" libraryPath="&quot;C:\Users\Martin\Downloads\MPIR-Binary\lib\MD\x64\Release&quot;"
                        headerPath="&quot;C:\Users\Martin\Downloads\MPIR-Binary\include&quot;"

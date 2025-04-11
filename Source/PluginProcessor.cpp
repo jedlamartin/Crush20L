@@ -280,7 +280,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrangeCrush20LAudioProcessor
     std::make_unique<juce::AudioParameterBool>("odButton", "Overdrive Button", false),
     std::make_unique<juce::AudioParameterFloat>("vol", "Volume", juce::NormalisableRange<float>(0.01f, 50000.0f, 0.5f, 0.3f), 0.01f),
     std::make_unique<juce::AudioParameterFloat>("input", "Input Gain", juce::NormalisableRange<float>(-24.0f,12.0f,0.1f), 0.0f),
-    std::make_unique<juce::AudioParameterFloat>("output", "Output Gain",juce::NormalisableRange<float>(-12.0f,6.0f,0.1f), 0.0f)
+    std::make_unique<juce::AudioParameterFloat>("output", "Output Gain",juce::NormalisableRange<float>(-12.0f,6.0f,0.1f), 0.0f),
+    std::make_unique<juce::AudioParameterChoice>("cabButton", "Cabinet Selector", juce::StringArray{"Default Cab","No Cab","Import"},0)
     };
     return vtsParameterLayout;
 }
