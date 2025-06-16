@@ -214,7 +214,6 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             stage6.processBlock(buffer);
             });
 
-            
         resample.decimate(buffer);
 
 #else 
@@ -225,6 +224,17 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         stage6.processBlock(buffer);
 #endif
 
+        // Cab IR
+        switch (static_cast<int>(parameters.getRawParameterValue("cabButton")->load())) {
+        case 0:
+            // default cab IR
+            break;
+        case 2:
+            //custom ir
+            break;
+        default:
+            break;
+        }
 
         float outputGain = std::pow(10, parameters.getRawParameterValue("output")->load() / 20.0f) * 0.04f;
 

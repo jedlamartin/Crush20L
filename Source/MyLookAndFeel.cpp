@@ -183,7 +183,7 @@ Label::~Label() {
 }
 
 
-CabButton::CabButton(juce::RangedAudioParameter* position){
+CabButton::CabButton(juce::RangedAudioParameter* position) :onCabChoiceSelected(nullptr) {
     juce::AudioParameterChoice* positionDC = dynamic_cast<juce::AudioParameterChoice*>(position);
     this->setLookAndFeel(&lookAndFeel);
     this->popup.setLookAndFeel(&lookAndFeel);
@@ -203,7 +203,27 @@ CabButton::CabButton(juce::RangedAudioParameter* position){
     }
 
     this->onClick = [this]() {
-        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this), [this](int res) {});
+        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this), 
+            [this](int res) {
+                switch (res) {
+                case 1:
+                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+                    break;
+                case 2:
+                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+                    break;
+                case 3:
+                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+                    break;
+                default:
+                    break;
+                }
+            
+                if (onCabChoiceSelected != nullptr) {
+                    onCabChoiceSelected(res - 1);
+                }
+            }
+             );
     };
 }
 
@@ -217,4 +237,17 @@ CabButton::CabButton(juce::RangedAudioParameter* position){
 CabButton::~CabButton(){
     this->setLookAndFeel(nullptr);
     this->popup.setLookAndFeel(nullptr);
+}
+
+CabButtonAttachment::CabButtonAttachment(juce::AudioProcessorValueTreeState& stateToUse, const juce::String& parameterID, CabButton& button):vts(stateToUse), button(button), parameter(nullptr){
+    this->parameter = dynamic_cast<juce::AudioParameterChoice*>(vts.getParameter(parameterID));
+    jassert(parameter != nullptr);
+
+    parameter->addListener(this);
+
+    button.onCabChoiceSelected = [this](int index) {
+        const float normValue = static_cast<float>(index) / float(parameter->choices.size() - 1);
+        parameter->setValueNotifyingHost(normValue);
+        };
+
 }

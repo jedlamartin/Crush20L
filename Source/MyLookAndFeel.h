@@ -85,7 +85,15 @@ private:
     juce::PopupMenu popup;
 public:
     CabButton(juce::RangedAudioParameter* position);
+    std::function<void(int)> onCabChoiceSelected;
     ~CabButton();
 };
 
-//class CabButtonAttachment : ezt kell jol megirni hogy mukodjon a parameterrel
+class CabButtonAttachment : juce::AudioProcessorParameter::Listener { //ezt kell jol megirni hogy mukodjon a parameterrel
+private:
+    juce::AudioProcessorValueTreeState& vts;
+    CabButton& button;
+    juce::AudioParameterChoice* parameter;
+public:
+    CabButtonAttachment(juce::AudioProcessorValueTreeState& stateToUse, const juce::String& parameterID, CabButton& button);
+};
