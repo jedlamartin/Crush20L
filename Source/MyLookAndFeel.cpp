@@ -192,39 +192,37 @@ CabButton::CabButton(juce::RangedAudioParameter* position) :onCabChoiceSelected(
     this->popup.addItem(2, juce::String("No cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize));
     this->popup.addItem(3, juce::String("Load custom IR..."), true, false, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize));
 
-    if (static_cast<int>(*positionDC) == 1) {
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-    }
-    else if (static_cast<int>(*positionDC) == 2) {
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-    }
-    else {
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-    }
+    setImageFromIndex(static_cast<int>(*positionDC));
 
     this->onClick = [this]() {
         this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this), 
             [this](int res) {
-                switch (res) {
-                case 1:
-                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-                    break;
-                case 2:
-                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-                    break;
-                case 3:
-                    this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-                    break;
-                default:
-                    break;
-                }
-            
+               
+                this->setImageFromIndex(res);
+
                 if (onCabChoiceSelected != nullptr) {
                     onCabChoiceSelected(res - 1);
                 }
             }
              );
     };
+}
+
+void CabButton::setImageFromIndex(int index)
+{
+    switch (index) {
+    case 1:
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+        break;
+    case 2:
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+        break;
+    case 3:
+        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+        break;
+    default:
+        break;
+    }
 }
 
 
@@ -250,4 +248,18 @@ CabButtonAttachment::CabButtonAttachment(juce::AudioProcessorValueTreeState& sta
         parameter->setValueNotifyingHost(normValue);
         };
 
+}
+
+void CabButtonAttachment::parameterValueChanged(int parameterIndex, float newValue){
+    juce::MessageManager::callAsync([this](){
+        if (this->parameter == nullptr) 
+            return;
+
+        button.setImageFromIndex(parameter->getIndex());
+        });
+}
+
+CabButtonAttachment::~CabButtonAttachment() {
+    if (parameter != nullptr)
+        parameter->removeListener(this);
 }

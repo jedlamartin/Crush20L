@@ -69,7 +69,7 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     outputGainLabel.attachToComponent(&outputGain, true);
 
     this->addAndMakeVisible(cabButton);
-    //cabButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "cabButton", cabButton));
+    cabButtonAttachment.reset(new CabButtonAttachment(valueTreeState, "cabButton", cabButton));
 
     setSize (1000, 350);
 

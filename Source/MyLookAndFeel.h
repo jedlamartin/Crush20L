@@ -85,6 +85,7 @@ private:
     juce::PopupMenu popup;
 public:
     CabButton(juce::RangedAudioParameter* position);
+    void setImageFromIndex(int index);
     std::function<void(int)> onCabChoiceSelected;
     ~CabButton();
 };
@@ -94,6 +95,10 @@ private:
     juce::AudioProcessorValueTreeState& vts;
     CabButton& button;
     juce::AudioParameterChoice* parameter;
+
 public:
     CabButtonAttachment(juce::AudioProcessorValueTreeState& stateToUse, const juce::String& parameterID, CabButton& button);
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
+    ~CabButtonAttachment();
 };

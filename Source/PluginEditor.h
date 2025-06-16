@@ -75,7 +75,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputGainAttachment;
 
     CabButton cabButton;
-    //std::unique_ptr<juce::AudioProcessorValueTreeState::> cabButtonAttachment;
+    std::unique_ptr<CabButtonAttachment> cabButtonAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessorEditor)
 };
