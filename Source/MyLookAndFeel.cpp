@@ -183,7 +183,7 @@ Label::~Label() {
 }
 
 
-CabButton::CabButton(juce::RangedAudioParameter* position) :onCabChoiceSelected(nullptr) {
+CabButton::CabButton(juce::RangedAudioParameter* position) :juce::ImageButton(), onCabChoiceSelected(nullptr) {
     juce::AudioParameterChoice* positionDC = dynamic_cast<juce::AudioParameterChoice*>(position);
     this->setLookAndFeel(&lookAndFeel);
     this->popup.setLookAndFeel(&lookAndFeel);

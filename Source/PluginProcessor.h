@@ -17,6 +17,9 @@
 #include "Stage6.h"
 #include "ReSample.hpp"
 
+
+#define FIR_TAPS 1000
+
 //==============================================================================
 /**
 */
@@ -95,6 +98,9 @@ private:
     Stage5 stage5;
     Stage6 stage6;
     ParameterAttachment stage2Attachment, stage3Attachment, stage4Attachment, stage5Attachment;
+
+    std::array<float, FIR_TAPS > default_cab;
+    std::array<float, FIR_TAPS > loaded_cab;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessor)
 };

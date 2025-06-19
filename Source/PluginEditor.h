@@ -35,6 +35,8 @@ private:
     OrangeCrush20LAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
 
+    //TODO: dont use getrawparametervalue, use getparameter everywhere
+
     juce::Image background;
 
     Knob gainSlider;

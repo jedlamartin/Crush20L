@@ -7,6 +7,7 @@
               cppLanguageStandard="latest">
   <MAINGROUP id="q04bjG" name="OrangeCrush20L">
     <GROUP id="{18E15198-68BF-D13F-95FA-35C5D3FC2225}" name="Assets">
+      <FILE id="IhW8pW" name="orange_cab.wav" compile="0" resource="1" file="Assets/orange_cab.wav"/>
       <FILE id="s9b0Ix" name="cab.png" compile="0" resource="1" file="Assets/cab.png"/>
       <FILE id="C2r17Y" name="ir.png" compile="0" resource="1" file="Assets/ir.png"/>
       <FILE id="L4e5In" name="nocab.png" compile="0" resource="1" file="Assets/nocab.png"/>

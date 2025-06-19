@@ -78,8 +78,7 @@ public:
 };
 
 
-//nem komboboxbol kell csinálni, hanem sajat classbol
-class CabButton : public juce::ImageButton { // lehetne a switchnek a leszarmazottja{
+class CabButton : public juce::ImageButton {
 private:
     MyLookAndFeel lookAndFeel;
     juce::PopupMenu popup;

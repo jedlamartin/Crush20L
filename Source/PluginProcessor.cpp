@@ -47,6 +47,11 @@ parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParam
     stage5.initParameters(parameters.getRawParameterValue("vol"));
     this->parameters.addParameterListener("vol", &stage5Attachment);
 
+    // fill up the default impulse responses
+    for (int i = 0; i < FIR_TAPS; i++) {
+
+    }
+
 
 }
 
