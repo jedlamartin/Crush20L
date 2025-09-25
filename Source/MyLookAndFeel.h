@@ -65,7 +65,7 @@ public:
 
 class ListenerSwitch : public Switch {
 public:
-    ListenerSwitch(std::atomic<float>*position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
+    ListenerSwitch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
     void changeState() override;
 };
 

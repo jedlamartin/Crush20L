@@ -101,6 +101,7 @@ private:
 
     std::array<float, FIR_TAPS > default_cab;
     std::array<float, FIR_TAPS > loaded_cab;
+    CircularBuffer<float, FIR_TAPS> cab_buffer;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessor)
 };

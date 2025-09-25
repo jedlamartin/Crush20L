@@ -26,7 +26,7 @@ OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
     :
 #endif
 parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParameterLayout()),stage2Attachment(&stage2, this), 
-            stage3Attachment(&stage3, this), stage4Attachment(&stage4, this), stage5Attachment(&stage5, this)
+            stage3Attachment(&stage3, this), stage4Attachment(&stage4, this), stage5Attachment(&stage5, this), cab_buffer(0.0f)
 {
     //Stage2
     this->stage2.initParameters(parameters.getRawParameterValue("gain"));
@@ -205,7 +205,6 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage2.processBlock(buffer);
             });
-        //ezt tesztelni kell hogy jó legyen
         resample.process([this](juce::AudioBuffer<float>& buffer) {
             stage3.processBlock(buffer);
             });
