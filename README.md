@@ -4,7 +4,7 @@ This branch is used for **computational performance analysis** of the core algor
 
 ---
 
-## 📊 Purpose
+## Purpose
 
 Measure the **FLOPs (floating point operations)** performed during audio processing stages to:
 
@@ -14,13 +14,13 @@ Measure the **FLOPs (floating point operations)** performed during audio process
 
 ---
 
-## 🛠️ Dependencies
+## Dependencies
 
 - **PAPI** (installed via package manager or built from source)
 - **CMake** (version 3.10+)
 - **C++17** compatible compiler
 
-### 📦 On Arch Linux:
+### On Linux:
 
 ```bash
 sudo pacman -S papi
