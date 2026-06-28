@@ -25,6 +25,28 @@
       <FILE id="Bp4nnP" name="crush20l256.png" compile="0" resource="1" file="Assets/crush20l256.png"/>
     </GROUP>
     <GROUP id="{50F879FF-B2E5-1FAE-128F-856033A8783F}" name="Source">
+      <GROUP id="{042BD16D-53B0-A9B5-CEAE-023085F66320}" name="Cab">
+        <FILE id="Yi0qhN" name="Cab.cpp" compile="1" resource="0" file="Source/Cab.cpp"/>
+        <FILE id="Z1X85x" name="Cab.h" compile="0" resource="0" file="Source/Cab.h"/>
+        <FILE id="ZbHBZv" name="CabHelpers.cpp" compile="1" resource="0" file="Source/CabHelpers.cpp"/>
+        <FILE id="uerWDN" name="CabHelpers.h" compile="0" resource="0" file="Source/CabHelpers.h"/>
+      </GROUP>
+      <GROUP id="{068D3B76-23FA-0D3F-403A-C0177B3E7F3E}" name="Amp">
+        <FILE id="iwNFLt" name="Stage3.h" compile="0" resource="0" file="Source/Stage3.h"/>
+        <FILE id="DBkPEM" name="Stage3.cpp" compile="1" resource="0" file="Source/Stage3.cpp"/>
+        <FILE id="wLIKXk" name="Stage4.h" compile="0" resource="0" file="Source/Stage4.h"/>
+        <FILE id="xHVBEt" name="Stage4.cpp" compile="1" resource="0" file="Source/Stage4.cpp"/>
+        <FILE id="pp8FPs" name="Stage5.h" compile="0" resource="0" file="Source/Stage5.h"/>
+        <FILE id="dxDl3D" name="Stage5.cpp" compile="1" resource="0" file="Source/Stage5.cpp"/>
+        <FILE id="AEKSlq" name="Stage6.h" compile="0" resource="0" file="Source/Stage6.h"/>
+        <FILE id="UGBPCe" name="Stage6.cpp" compile="1" resource="0" file="Source/Stage6.cpp"/>
+        <FILE id="me618P" name="Stage.h" compile="0" resource="0" file="Source/Stage.h"/>
+        <FILE id="FTvIUv" name="Stage.cpp" compile="1" resource="0" file="Source/Stage.cpp"/>
+        <FILE id="PM240Q" name="Stage1.h" compile="0" resource="0" file="Source/Stage1.h"/>
+        <FILE id="FfOBLe" name="Stage1.cpp" compile="1" resource="0" file="Source/Stage1.cpp"/>
+        <FILE id="uLYF89" name="Stage2.h" compile="0" resource="0" file="Source/Stage2.h"/>
+        <FILE id="nsuefZ" name="Stage2.cpp" compile="1" resource="0" file="Source/Stage2.cpp"/>
+      </GROUP>
       <FILE id="tCGzlG" name="MyLookAndFeel.cpp" compile="1" resource="0"
             file="Source/MyLookAndFeel.cpp"/>
       <FILE id="m0I4jX" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/MyLookAndFeel.h"/>
@@ -33,20 +55,6 @@
       <FILE id="EXMlxB" name="CircularBuffer.hpp" compile="0" resource="0"
             file="Source/CircularBuffer.hpp"/>
       <FILE id="KsVqei" name="ReSample.hpp" compile="0" resource="0" file="Source/ReSample.hpp"/>
-      <FILE id="me618P" name="Stage.h" compile="0" resource="0" file="Source/Stage.h"/>
-      <FILE id="FTvIUv" name="Stage.cpp" compile="1" resource="0" file="Source/Stage.cpp"/>
-      <FILE id="PM240Q" name="Stage1.h" compile="0" resource="0" file="Source/Stage1.h"/>
-      <FILE id="FfOBLe" name="Stage1.cpp" compile="1" resource="0" file="Source/Stage1.cpp"/>
-      <FILE id="uLYF89" name="Stage2.h" compile="0" resource="0" file="Source/Stage2.h"/>
-      <FILE id="nsuefZ" name="Stage2.cpp" compile="1" resource="0" file="Source/Stage2.cpp"/>
-      <FILE id="iwNFLt" name="Stage3.h" compile="0" resource="0" file="Source/Stage3.h"/>
-      <FILE id="DBkPEM" name="Stage3.cpp" compile="1" resource="0" file="Source/Stage3.cpp"/>
-      <FILE id="wLIKXk" name="Stage4.h" compile="0" resource="0" file="Source/Stage4.h"/>
-      <FILE id="xHVBEt" name="Stage4.cpp" compile="1" resource="0" file="Source/Stage4.cpp"/>
-      <FILE id="pp8FPs" name="Stage5.h" compile="0" resource="0" file="Source/Stage5.h"/>
-      <FILE id="dxDl3D" name="Stage5.cpp" compile="1" resource="0" file="Source/Stage5.cpp"/>
-      <FILE id="AEKSlq" name="Stage6.h" compile="0" resource="0" file="Source/Stage6.h"/>
-      <FILE id="UGBPCe" name="Stage6.cpp" compile="1" resource="0" file="Source/Stage6.cpp"/>
       <FILE id="KnHWPP" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="s13cPF" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -63,6 +71,8 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -97,6 +107,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../modules"/>
         <MODULEPATH id="juce_dsp" path="../../modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../../Program Files/JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

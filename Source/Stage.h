@@ -5,10 +5,10 @@
 
 #define RESAMPLE
 
-#define TL072_CUTOFF 13.45f
-#define CROSSFADE_SAMPLES 14400
-#define INT_SIZE 4
-#define INT_POINTS 40
+constexpr float TL072_CUTOFF = 13.45f;
+constexpr size_t CROSSFADE_SAMPLES = 14400;
+constexpr size_t INT_SIZE = 4;
+constexpr size_t INT_POINTS = 40;
 
 class Stage {
 protected:

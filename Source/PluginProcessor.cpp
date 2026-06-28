@@ -26,8 +26,7 @@ OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
     :
 #endif
 parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParameterLayout()),stage2Attachment(&stage2, this), 
-            stage3Attachment(&stage3, this), stage4Attachment(&stage4, this), stage5Attachment(&stage5, this), cab_buffer(0.0f)
-{
+    stage3Attachment(&stage3, this), stage4Attachment(&stage4, this), stage5Attachment(&stage5, this), cabs{}{
     //Stage2
     this->stage2.initParameters(parameters.getRawParameterValue("gain"));
     this->parameters.addParameterListener("gain", &stage2Attachment);
@@ -46,13 +45,6 @@ parameters(*this, nullptr, juce::Identifier("OrangeCeush20L"), this->createParam
     //stage5
     stage5.initParameters(parameters.getRawParameterValue("vol"));
     this->parameters.addParameterListener("vol", &stage5Attachment);
-
-    // fill up the default impulse responses
-    for (int i = 0; i < FIR_TAPS; i++) {
-
-    }
-
-
 }
 
 OrangeCrush20LAudioProcessor::~OrangeCrush20LAudioProcessor()
@@ -171,21 +163,8 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
 
     //a buffer adatai egy fontos mem cimen vannak, ahonnan nem szabad reallokalni az adatokat
 
@@ -193,7 +172,6 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     if (this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
         float inputGain = std::pow(10, parameters.getRawParameterValue("input")->load()/20.0f) * 3.0f;
         buffer.applyGain(inputGain);
-        //buffer.applyGain(6.0f);
 
 
         stage1.processBlock(buffer);
@@ -218,6 +196,7 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             stage6.processBlock(buffer);
             });
 
+
         resample.decimate(buffer);
 
 #else 
@@ -229,21 +208,21 @@ void OrangeCrush20LAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 #endif
 
         // Cab IR
-        switch (static_cast<int>(parameters.getRawParameterValue("cabButton")->load())) {
-        case 0:
-            // default cab IR
-            break;
-        case 2:
-            //custom ir
-            break;
-        default:
-            break;
+        const int currentCabChoice = static_cast<int>(parameters.getRawParameterValue("cabButton")->load());
+
+        if (currentCabChoice == 0) {      // "Default Cab"
+            cabs.processBlock(buffer, ActiveCab::DEFAULT_CAB);
+        }
+        else if (currentCabChoice == 1) { // "No Cab"
+            cabs.processBlock(buffer, ActiveCab::NO_CAB);
+        }
+        else if (currentCabChoice == 2) { // "Import" (Loaded Cab)
+            cabs.processBlock(buffer, ActiveCab::LOADED_CAB);
         }
 
         float outputGain = std::pow(10, parameters.getRawParameterValue("output")->load() / 20.0f) * 0.04f;
 
         buffer.applyGain(outputGain);
-        //buffer.applyGain(0.06f);
     }
 
 }
@@ -307,3 +286,6 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new OrangeCrush20LAudioProcessor();
 }
 
+void OrangeCrush20LAudioProcessor::loadCab(){
+    cabs.loadCab();
+}

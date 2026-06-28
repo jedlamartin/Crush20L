@@ -15,10 +15,9 @@
 #include "Stage4.h"
 #include "Stage5.h"
 #include "Stage6.h"
+#include "Cab.h"
 #include "ReSample.hpp"
 
-
-#define FIR_TAPS 1000
 
 //==============================================================================
 /**
@@ -81,11 +80,9 @@ public:
 
     //==============================================================================
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-     
+    void loadCab();
+
 private:
-
-
-
 
     juce::AudioProcessorValueTreeState parameters;
 
@@ -99,9 +96,7 @@ private:
     Stage6 stage6;
     ParameterAttachment stage2Attachment, stage3Attachment, stage4Attachment, stage5Attachment;
 
-    std::array<float, FIR_TAPS > default_cab;
-    std::array<float, FIR_TAPS > loaded_cab;
-    CircularBuffer<float, FIR_TAPS> cab_buffer;
+    Cabs cabs;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessor)
 };

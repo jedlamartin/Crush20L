@@ -192,16 +192,19 @@ CabButton::CabButton(juce::RangedAudioParameter* position) :juce::ImageButton(),
     this->popup.addItem(2, juce::String("No cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize));
     this->popup.addItem(3, juce::String("Load custom IR..."), true, false, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize));
 
-    setImageFromIndex(static_cast<int>(*positionDC));
+    setImageFromIndex(positionDC->getIndex());
 
     this->onClick = [this]() {
-        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this), 
+        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this).withPreferredPopupDirection(juce::PopupMenu::Options::PopupDirection::upwards),
             [this](int res) {
                
-                this->setImageFromIndex(res);
+                if (res > 0) {
+                    // Convert Popup ID (1, 2, 3) to APVTS index (0, 1, 2)
+                    this->setImageFromIndex(res - 1);
 
-                if (onCabChoiceSelected != nullptr) {
-                    onCabChoiceSelected(res - 1);
+                    if (onCabChoiceSelected != nullptr) {
+                        onCabChoiceSelected(res - 1);
+                    }
                 }
             }
              );
@@ -211,13 +214,13 @@ CabButton::CabButton(juce::RangedAudioParameter* position) :juce::ImageButton(),
 void CabButton::setImageFromIndex(int index)
 {
     switch (index) {
-    case 1:
+    case 0:
         this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
         break;
-    case 2:
+    case 1:
         this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
         break;
-    case 3:
+    case 2:
         this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
         break;
     default:

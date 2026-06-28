@@ -71,6 +71,17 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     this->addAndMakeVisible(cabButton);
     cabButtonAttachment.reset(new CabButtonAttachment(valueTreeState, "cabButton", cabButton));
 
+    cabButton.onCabChoiceSelected = [this](int choiceIndex) {
+        // choiceIndex here is (res - 1), so:
+        // 0 = Matched cab
+        // 1 = No cab
+        // 2 = Load custom IR...
+
+        if (choiceIndex == 2) {
+            audioProcessor.loadCab();
+        }
+    };
+
     setSize (1000, 350);
 
 }
@@ -102,8 +113,8 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->volSlider.setBounds(292, 172, 70, 70);
     this->powerButton.setBounds(117, 170, 75, 75);
     this->powerLed.setBounds(205, 186, 40, 40);
-    this->inputGain.setBounds(50, this->getBottom() - 30, 100, 25);
-    this->outputGain.setBounds(215, this->getBottom() - 30, 100, 25);
-    this->cabButton.setBounds(0, 0, 200, 50);
+    this->inputGain.setBounds(50, this->getBottom() - 25 - 5, 100, 25);
+    this->outputGain.setBounds(215, this->getBottom() - 25 - 5, 100, 25);
+    this->cabButton.setBounds(getRight() - 50 - 75, this->getBottom() - 50 - 5, 50, 50);
 }
 
