@@ -1,49 +1,78 @@
-#include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCrush20LAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor (&p), audioProcessor (p), valueTreeState(vts), 
-    powerButton(vts.getRawParameterValue("power"), BinaryData::powerswitch_off_png, BinaryData::powerswitch_off_pngSize, BinaryData::powerswitch_on_png, BinaryData::powerswitch_on_pngSize),
-    odButton(vts.getRawParameterValue("odButton"), BinaryData::odbutton_off_png, BinaryData::odbutton_off_pngSize, BinaryData::odbutton_on_png, BinaryData::odbutton_on_pngSize),
-    powerLed(vts.getRawParameterValue("power"), BinaryData::led_off_png, BinaryData::led_off_pngSize, BinaryData::led_on_png, BinaryData::led_on_pngSize)
+#include "PluginProcessor.h"
 
-{
-    this->background = juce::ImageCache::getFromMemory(BinaryData::background_png, BinaryData::background_pngSize);
+//==============================================================================
+
+OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor(
+    OrangeCrush20LAudioProcessor& p,
+    juce::AudioProcessorValueTreeState& vts) :
+    AudioProcessorEditor(&p), audioProcessor(p), valueTreeState(vts),
+    powerButton(vts.getRawParameterValue("power"),
+                BinaryData::powerswitch_off_png,
+                BinaryData::powerswitch_off_pngSize,
+                BinaryData::powerswitch_on_png,
+                BinaryData::powerswitch_on_pngSize),
+    odButton(vts.getRawParameterValue("odButton"),
+             BinaryData::odbutton_off_png,
+             BinaryData::odbutton_off_pngSize,
+             BinaryData::odbutton_on_png,
+             BinaryData::odbutton_on_pngSize),
+    powerLed(vts.getRawParameterValue("power"),
+             BinaryData::led_off_png,
+             BinaryData::led_off_pngSize,
+             BinaryData::led_on_png,
+             BinaryData::led_on_pngSize),
+    cabButton(vts.getParameter("cabButton")) {
+    this->background = juce::ImageCache::getFromMemory(
+        BinaryData::background_png, BinaryData::background_pngSize);
 
     this->addAndMakeVisible(gainSlider);
-    gainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "gain", gainSlider));
+    gainAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "gain", gainSlider));
 
     this->addAndMakeVisible(bassSlider);
-    bassAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "bass", bassSlider));
+    bassAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "bass", bassSlider));
 
     this->addAndMakeVisible(midSlider);
-    midAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "mid", midSlider));
+    midAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "mid", midSlider));
 
     this->addAndMakeVisible(trebleSlider);
-    trebleAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "treble", trebleSlider));
+    trebleAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "treble", trebleSlider));
 
     this->addAndMakeVisible(odSlider);
-    odAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "od", odSlider));
-    
-        
+    odAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(
+        valueTreeState, "od", odSlider));
+
     this->addAndMakeVisible(volSlider);
-    volAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "vol", volSlider));
+    volAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "vol", volSlider));
 
     this->addAndMakeVisible(powerButton);
-    powerButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "power", powerButton));
-    powerButton.configure();
-
-
+    powerButtonAttachment.reset(
+        new juce::AudioProcessorValueTreeState::ButtonAttachment(
+            valueTreeState, "power", powerButton));
 
     this->addAndMakeVisible(odButton);
-    odButtonAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(valueTreeState, "odButton", odButton));
-    odButton.configure();
+    odButtonAttachment.reset(
+        new juce::AudioProcessorValueTreeState::ButtonAttachment(
+            valueTreeState, "odButton", odButton));
 
     this->addAndMakeVisible(powerLed);
     powerButton.pushListener(&powerLed);
 
     this->addAndMakeVisible(inputGain);
-    inputGainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "input", inputGain));
+    inputGainAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "input", inputGain));
     this->inputGain.setTextValueSuffix(" dB");
     this->addAndMakeVisible(inputGainLabel);
     inputGainLabel.setText("IN", juce::dontSendNotification);
@@ -51,34 +80,42 @@ OrangeCrush20LAudioProcessorEditor::OrangeCrush20LAudioProcessorEditor (OrangeCr
     inputGainLabel.attachToComponent(&inputGain, true);
 
     this->addAndMakeVisible(outputGain);
-    outputGainAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(valueTreeState, "output", outputGain));
+    outputGainAttachment.reset(
+        new juce::AudioProcessorValueTreeState::SliderAttachment(
+            valueTreeState, "output", outputGain));
     this->outputGain.setTextValueSuffix(" dB");
     this->addAndMakeVisible(outputGainLabel);
     outputGainLabel.setText("OUT", juce::dontSendNotification);
     outputGainLabel.setFont(juce::Font(17.0f));
     outputGainLabel.attachToComponent(&outputGain, true);
 
-    setSize (1000, 350);
+    this->addAndMakeVisible(cabButton);
+    cabButtonAttachment.reset(
+        new CabButtonAttachment(valueTreeState, "cabButton", cabButton));
 
+    cabButtonAttachment->onCustomIrSelected = [this](int index) {
+        audioProcessor.loadCab();
+    };
+
+    setSize(1000, 350);
 }
 
-OrangeCrush20LAudioProcessorEditor::~OrangeCrush20LAudioProcessorEditor()
-{
-}
+OrangeCrush20LAudioProcessorEditor::~OrangeCrush20LAudioProcessorEditor() {}
 
 //==============================================================================
-void OrangeCrush20LAudioProcessorEditor::paint (juce::Graphics& g)
-{
-    if (this->background.isValid()) {
-        g.drawImage(this->background, this->getLocalBounds().toFloat(), juce::RectanglePlacement::onlyReduceInSize | juce::RectanglePlacement::stretchToFit);
-    }
-    else {
-        g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+void OrangeCrush20LAudioProcessorEditor::paint(juce::Graphics& g) {
+    if(this->background.isValid()) {
+        g.drawImage(this->background,
+                    this->getLocalBounds().toFloat(),
+                    juce::RectanglePlacement::onlyReduceInSize |
+                        juce::RectanglePlacement::stretchToFit);
+    } else {
+        g.fillAll(getLookAndFeel().findColour(
+            juce::ResizableWindow::backgroundColourId));
     }
 }
 
-void OrangeCrush20LAudioProcessorEditor::resized()
-{
+void OrangeCrush20LAudioProcessorEditor::resized() {
     this->gainSlider.setBounds(742, 172, 70, 70);
     this->bassSlider.setBounds(382, 177, 60, 60);
     this->midSlider.setBounds(464, 177, 60, 60);
@@ -88,7 +125,8 @@ void OrangeCrush20LAudioProcessorEditor::resized()
     this->volSlider.setBounds(292, 172, 70, 70);
     this->powerButton.setBounds(117, 170, 75, 75);
     this->powerLed.setBounds(205, 186, 40, 40);
-    this->inputGain.setBounds(50, this->getBottom() - 30, 100, 25);
-    this->outputGain.setBounds(215, this->getBottom() - 30, 100, 25);
+    this->inputGain.setBounds(50, this->getBottom() - 25 - 5, 100, 25);
+    this->outputGain.setBounds(215, this->getBottom() - 25 - 5, 100, 25);
+    this->cabButton.setBounds(
+        getRight() - 50 - 125, this->getBottom() - 50 - 5, 50, 50);
 }
-

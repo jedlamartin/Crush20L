@@ -1,22 +1,44 @@
 #pragma once
-#include "JuceHeader.h"
 #include <vector>
 
-class MyLookAndFeel :public juce::LookAndFeel_V4 {
+#include "JuceHeader.h"
+
+class MyLookAndFeel : public juce::LookAndFeel_V4 {
 private:
     juce::Image knobImage;
     int knobFrames;
     int knobSize;
+
 public:
     MyLookAndFeel();
-    void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
-    void drawLinearSlider(juce::Graphics&, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, juce::Slider::SliderStyle, juce::Slider&) override;
+    void drawRotarySlider(juce::Graphics&,
+                          int x,
+                          int y,
+                          int width,
+                          int height,
+                          float sliderPosProportional,
+                          float rotaryStartAngle,
+                          float rotaryEndAngle,
+                          juce::Slider&) override;
+    void drawLinearSlider(juce::Graphics&,
+                          int x,
+                          int y,
+                          int width,
+                          int height,
+                          float sliderPos,
+                          float minSliderPos,
+                          float maxSliderPos,
+                          juce::Slider::SliderStyle,
+                          juce::Slider&) override;
     int getSliderPopupPlacement(juce::Slider&) override;
 };
 
-class Knob :public juce::Slider {
+class Knob : public juce::Slider {
 private:
+    // juce::RangedAudioParameter* param;
+    // //https://forum.juce.com/t/getrawparametervalue-vs-getparameter/38395
     MyLookAndFeel lookAndFeel;
+
 public:
     Knob();
     void paint(juce::Graphics& g) override;
@@ -27,6 +49,7 @@ public:
 class VerticalSlider : public juce::Slider {
 private:
     MyLookAndFeel lookAndFeel;
+
 public:
     VerticalSlider();
     void paint(juce::Graphics& g) override;
@@ -38,30 +61,74 @@ class Switch : public juce::ImageButton {
     int imageOffSize;
     const void* imageOnData;
     int imageOnSize;
+
 public:
-    Switch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
+    Switch(std::atomic<float>* position,
+           const void* imageOffData,
+           int imageOffSize,
+           const void* imageOnData,
+           int imageOnSize);
     virtual void changeState();
 };
 
 class ToggleSwitch : public Switch {
 private:
     std::vector<Switch*> listeners;
+
 public:
-    ToggleSwitch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
-    void configure();
+    ToggleSwitch(std::atomic<float>* position,
+                 const void* imageOffData,
+                 int imageOffSize,
+                 const void* imageOnData,
+                 int imageOnSize);
+    void clicked() override;
     void pushListener(Switch* toggleSwitch);
 };
 
 class ListenerSwitch : public Switch {
 public:
-    ListenerSwitch(std::atomic<float>*position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize);
+    ListenerSwitch(std::atomic<float>* position,
+                   const void* imageOffData,
+                   int imageOffSize,
+                   const void* imageOnData,
+                   int imageOnSize);
     void changeState() override;
 };
 
 class Label : public juce::Label {
 private:
     MyLookAndFeel lookAndFeel;
+
 public:
     Label();
     ~Label();
+};
+
+class CabButton : public juce::ImageButton {
+private:
+    MyLookAndFeel lookAndFeel;
+    juce::PopupMenu popup;
+
+public:
+    CabButton(juce::RangedAudioParameter* position);
+    void setImageFromIndex(int index);
+    std::function<void(int)> onCabChoiceSelected;
+    ~CabButton();
+};
+
+class CabButtonAttachment : juce::AudioProcessorParameter::Listener {
+private:
+    juce::AudioProcessorValueTreeState& vts;
+    CabButton& button;
+    juce::AudioParameterChoice* parameter;
+
+public:
+    CabButtonAttachment(juce::AudioProcessorValueTreeState& stateToUse,
+                        const juce::String& parameterID,
+                        CabButton& button);
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex,
+                                 bool gestureIsStarting) override {}
+    std::function<void(int)> onCustomIrSelected;
+    ~CabButtonAttachment();
 };

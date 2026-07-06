@@ -1,14 +1,13 @@
 #pragma once
-#include "Stage.h"
 #include <vector>
 
+#include "Stage.h"
 
-class Stage6 :public Stage {
+class Stage6 : public Stage {
 private:
     float A, B, C;
     std::vector<float> yBuffer;
     std::vector<float> uBuffer;
-    float maxInput, maxOutput;
     const float cutOffVoltage;
 
 public:

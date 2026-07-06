@@ -1,3 +1,3 @@
 #include "Stage.h"
 
-Stage::Stage(bool resampled=false) : resampled(resampled){}
+Stage::Stage(bool resampled = false) : resampled(resampled) {}
