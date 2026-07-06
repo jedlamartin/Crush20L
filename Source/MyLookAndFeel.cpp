@@ -10,259 +10,453 @@
 
 #include "MyLookAndFeel.h"
 
-Knob::Knob() :juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
+Knob::Knob() :
+    juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, TextBoxBelow) {
     this->setLookAndFeel(&this->lookAndFeel);
     this->setPopupDisplayEnabled(true, false, nullptr);
 }
 
 void Knob::paint(juce::Graphics& g) {
-    this->lookAndFeel.drawRotarySlider(g, this->getLocalBounds().getX(), this->getLocalBounds().getY(), this->getLocalBounds().getWidth(), this->getLocalBounds().getHeight(), this->getNormalisableRange().convertTo0to1(this->getValue()), 0.0f, 360.0f, *this);
+    this->lookAndFeel.drawRotarySlider(
+        g,
+        this->getLocalBounds().getX(),
+        this->getLocalBounds().getY(),
+        this->getLocalBounds().getWidth(),
+        this->getLocalBounds().getHeight(),
+        this->getNormalisableRange().convertTo0to1(this->getValue()),
+        0.0f,
+        360.0f,
+        *this);
 }
 
-juce::String Knob::getTextFromValue(double value)
-{
-    //return juce::String((this->getNormalisableRange().convertTo0to1(value)) * 10.0f, 1);
+juce::String Knob::getTextFromValue(double value) {
+    // return juce::String((this->getNormalisableRange().convertTo0to1(value))
+    // * 10.0f, 1);
     return juce::String(this->getValue());
 }
 
-Knob::~Knob() {
-    this->setLookAndFeel(nullptr);
-}
+Knob::~Knob() { this->setLookAndFeel(nullptr); }
 
-
-
-MyLookAndFeel::MyLookAndFeel() :LookAndFeel_V4() {
-    this->knobImage = juce::ImageCache::getFromMemory(BinaryData::crush20l256_png, BinaryData::crush20l256_pngSize);
-    this->knobFrames = static_cast<int>(juce::jmax(this->knobImage.getWidth(), this->knobImage.getHeight()) / juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight()));
-    this->knobSize = juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight());
-    this->setColour(juce::Slider::backgroundColourId, juce::Colours::grey.withAlpha(0.5f));
+MyLookAndFeel::MyLookAndFeel() : LookAndFeel_V4() {
+    this->knobImage = juce::ImageCache::getFromMemory(
+        BinaryData::crush20l256_png, BinaryData::crush20l256_pngSize);
+    this->knobFrames = static_cast<int>(
+        juce::jmax(this->knobImage.getWidth(), this->knobImage.getHeight()) /
+        juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight()));
+    this->knobSize =
+        juce::jmin(this->knobImage.getWidth(), this->knobImage.getHeight());
+    this->setColour(juce::Slider::backgroundColourId,
+                    juce::Colours::grey.withAlpha(0.5f));
     this->setColour(juce::Slider::trackColourId, juce::Colours::black);
     this->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     this->setColour(juce::Label::textColourId, juce::Colours::black);
-    this->setColour(juce::ComboBox::backgroundColourId, juce::Colours::transparentWhite);
+    this->setColour(juce::ComboBox::backgroundColourId,
+                    juce::Colours::transparentWhite);
     this->setColour(juce::ComboBox::textColourId, juce::Colours::black);
-    this->setColour(juce::PopupMenu::backgroundColourId, juce::Colours::transparentWhite);
+    this->setColour(juce::PopupMenu::backgroundColourId,
+                    juce::Colours::transparentWhite);
     this->setColour(juce::PopupMenu::textColourId, juce::Colours::black);
-    
 }
 
-void MyLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) {
-    if (this->knobImage.isValid()) {
+void MyLookAndFeel::drawRotarySlider(juce::Graphics& g,
+                                     int x,
+                                     int y,
+                                     int width,
+                                     int height,
+                                     float sliderPosProportional,
+                                     float rotaryStartAngle,
+                                     float rotaryEndAngle,
+                                     juce::Slider&) {
+    if(this->knobImage.isValid()) {
+        g.drawImage(this->knobImage,
+                    x,
+                    y,
+                    juce::jmin(width, height),
+                    juce::jmin(width, height),
+                    0,
+                    300 * juce::roundToInt(juce::jmap<float>(
+                              sliderPosProportional,
+                              0.0f,
+                              static_cast<float>(this->knobFrames - 1))),
+                    this->knobSize,
+                    this->knobSize);
 
-        g.drawImage(this->knobImage, x, y, juce::jmin(width, height), juce::jmin(width, height), 0, 300 * juce::roundToInt(juce::jmap<float>(sliderPosProportional, 0.0f, static_cast<float>(this->knobFrames - 1))), this->knobSize, this->knobSize);
-
+    } else {
+        g.drawFittedText("No image",
+                         x,
+                         y,
+                         width,
+                         height,
+                         juce::Justification::horizontallyCentred |
+                             juce::Justification::centred,
+                         1);
     }
-    else {
-        g.drawFittedText("No image", x, y, width, height, juce::Justification::horizontallyCentred | juce::Justification::centred, 1);
-    }
-
 }
 
-void MyLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, juce::Slider::SliderStyle style, juce::Slider& slider){
-
-    if(style==juce::Slider::SliderStyle::LinearHorizontal || style==juce::Slider::SliderStyle::LinearVertical)
+void MyLookAndFeel::drawLinearSlider(juce::Graphics& g,
+                                     int x,
+                                     int y,
+                                     int width,
+                                     int height,
+                                     float sliderPos,
+                                     float minSliderPos,
+                                     float maxSliderPos,
+                                     juce::Slider::SliderStyle style,
+                                     juce::Slider& slider) {
+    if(style == juce::Slider::SliderStyle::LinearHorizontal ||
+       style == juce::Slider::SliderStyle::LinearVertical)
 
     {
-        auto trackWidth = juce::jmin(3.0f, slider.isHorizontal() ? (float)height * 0.25f : (float)width * 0.25f);
+        auto trackWidth =
+            juce::jmin(3.0f,
+                       slider.isHorizontal() ? (float) height * 0.25f :
+                                               (float) width * 0.25f);
 
-        juce::Point<float> startPoint(slider.isHorizontal() ? (float)x : (float)x + (float)width * 0.5f,
-            slider.isHorizontal() ? (float)y + (float)height * 0.5f : (float)(height + y));
+        juce::Point<float> startPoint(
+            slider.isHorizontal() ? (float) x :
+                                    (float) x + (float) width * 0.5f,
+            slider.isHorizontal() ? (float) y + (float) height * 0.5f :
+                                    (float) (height + y));
 
-        juce::Point<float> endPoint(slider.isHorizontal() ? (float)(width + x) : startPoint.x,
-            slider.isHorizontal() ? startPoint.y : (float)y);
+        juce::Point<float> endPoint(
+            slider.isHorizontal() ? (float) (width + x) : startPoint.x,
+            slider.isHorizontal() ? startPoint.y : (float) y);
 
         juce::Path backgroundTrack;
         backgroundTrack.startNewSubPath(startPoint);
         backgroundTrack.lineTo(endPoint);
         g.setColour(slider.findColour(juce::Slider::backgroundColourId));
-        g.strokePath(backgroundTrack, { trackWidth, juce::PathStrokeType::beveled, juce::PathStrokeType::square });
+        g.strokePath(backgroundTrack,
+                     {trackWidth,
+                      juce::PathStrokeType::beveled,
+                      juce::PathStrokeType::square});
 
         juce::Path valueTrack;
         juce::Point<float> minPoint, maxPoint;
 
-        auto kx = slider.isHorizontal() ? sliderPos : ((float)x + (float)width * 0.5f);
-        auto ky = slider.isHorizontal() ? ((float)y + (float)height * 0.5f) : sliderPos;
+        auto kx = slider.isHorizontal() ? sliderPos :
+                                          ((float) x + (float) width * 0.5f);
+        auto ky = slider.isHorizontal() ? ((float) y + (float) height * 0.5f) :
+                                          sliderPos;
 
         minPoint = startPoint;
-        maxPoint = { kx, ky };
-
+        maxPoint = {kx, ky};
 
         auto thumbWidth = 15.0f;
 
         valueTrack.startNewSubPath(minPoint);
         valueTrack.lineTo(maxPoint);
         g.setColour(slider.findColour(juce::Slider::trackColourId));
-        g.strokePath(valueTrack, { trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+        g.strokePath(valueTrack,
+                     {trackWidth,
+                      juce::PathStrokeType::curved,
+                      juce::PathStrokeType::rounded});
 
-        //g.setColour(slider.findColour(juce::Slider::thumbColourId));
-        juce::ColourGradient thumbGradient(slider.findColour(juce::Slider::thumbColourId).contrasting(), maxPoint - juce::Point<float>(thumbWidth / 2, 0), slider.findColour(juce::Slider::thumbColourId), maxPoint - juce::Point<float>(0.7f * thumbWidth / 2, 0), true);
+        // g.setColour(slider.findColour(juce::Slider::thumbColourId));
+        juce::ColourGradient thumbGradient(
+            slider.findColour(juce::Slider::thumbColourId).contrasting(),
+            maxPoint - juce::Point<float>(thumbWidth / 2, 0),
+            slider.findColour(juce::Slider::thumbColourId),
+            maxPoint - juce::Point<float>(0.7f * thumbWidth / 2, 0),
+            true);
         g.setGradientFill(thumbGradient);
-        g.fillEllipse(juce::Rectangle<float>(static_cast<float> (thumbWidth), static_cast<float> (thumbWidth)).withCentre(maxPoint));
+        g.fillEllipse(juce::Rectangle<float>(static_cast<float>(thumbWidth),
+                                             static_cast<float>(thumbWidth))
+                          .withCentre(maxPoint));
+    } else {
+        LookAndFeel_V4::drawLinearSlider(g,
+                                         x,
+                                         y,
+                                         width,
+                                         height,
+                                         sliderPos,
+                                         minSliderPos,
+                                         maxSliderPos,
+                                         style,
+                                         slider);
     }
-    else {
-        LookAndFeel_V4::drawLinearSlider(g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
-    }
-    
 }
 
 int MyLookAndFeel::getSliderPopupPlacement(juce::Slider&) {
     return juce::BubbleComponent::BubblePlacement::above;
 }
 
-Switch::Switch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize) :juce::ImageButton(), imageOffData(imageOffData), imageOffSize(imageOffSize), imageOnData(imageOnData), imageOnSize(imageOnSize) {
-    if (position->load()>0.5f) {
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOnData, imageOnSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-    }
-    else {
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOffData, imageOffSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+Switch::Switch(std::atomic<float>* position,
+               const void* imageOffData,
+               int imageOffSize,
+               const void* imageOnData,
+               int imageOnSize) :
+    juce::ImageButton(), imageOffData(imageOffData), imageOffSize(imageOffSize),
+    imageOnData(imageOnData), imageOnSize(imageOnSize) {
+    if(position->load() > 0.5f) {
+        this->setImages(
+            false,
+            true,
+            true,
+            juce::ImageCache::getFromMemory(imageOnData, imageOnSize),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite);
+    } else {
+        this->setImages(
+            false,
+            true,
+            true,
+            juce::ImageCache::getFromMemory(imageOffData, imageOffSize),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite);
     }
 }
 
 void Switch::changeState() {
-    if (!this->getToggleState()) {
-        //this->powerButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOffData, imageOffSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
+    if(!this->getToggleState()) {
+        // this->powerButton.setToggleState(false,
+        // juce::NotificationType::dontSendNotification);
+        this->setImages(
+            false,
+            true,
+            true,
+            juce::ImageCache::getFromMemory(imageOffData, imageOffSize),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite);
+        this->repaint();
+    } else {
+        // this->powerButton.setToggleState(true,
+        // juce::NotificationType::dontSendNotification);
+        this->setImages(
+            false,
+            true,
+            true,
+            juce::ImageCache::getFromMemory(imageOnData, imageOnSize),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite,
+            juce::Image(),
+            1.0f,
+            juce::Colours::transparentWhite);
         this->repaint();
     }
-    else {
-        //this->powerButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(imageOnData, imageOnSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-        this->repaint();
-    }
-
 }
 
-ToggleSwitch::ToggleSwitch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize) :
+ToggleSwitch::ToggleSwitch(std::atomic<float>* position,
+                           const void* imageOffData,
+                           int imageOffSize,
+                           const void* imageOnData,
+                           int imageOnSize) :
     Switch(position, imageOffData, imageOffSize, imageOnData, imageOnSize) {
     this->setClickingTogglesState(true);
 }
 
-void ToggleSwitch::configure() {
-    this->onClick = [this]() {
-        this->changeState();
-        for (auto i : this->listeners) {
-            i->changeState();
-        }
-        };
+void ToggleSwitch::clicked() {
+    juce::ImageButton::clicked();
 
+    this->changeState();
+    for(auto i : this->listeners) {
+        i->changeState();
+    }
 }
 
 void ToggleSwitch::pushListener(Switch* toggleSwitch) {
     this->listeners.push_back(toggleSwitch);
 }
 
-ListenerSwitch::ListenerSwitch(std::atomic<float>* position, const void* imageOffData, int imageOffSize, const void* imageOnData, int imageOnSize) :
+ListenerSwitch::ListenerSwitch(std::atomic<float>* position,
+                               const void* imageOffData,
+                               int imageOffSize,
+                               const void* imageOnData,
+                               int imageOnSize) :
     Switch(position, imageOffData, imageOffSize, imageOnData, imageOnSize) {
     this->setClickingTogglesState(false);
 }
 
 void ListenerSwitch::changeState() {
-    this->setToggleState(!this->getToggleState(), juce::NotificationType::dontSendNotification);
+    this->setToggleState(!this->getToggleState(),
+                         juce::NotificationType::dontSendNotification);
     Switch::changeState();
 }
 
-VerticalSlider::VerticalSlider():juce::Slider(juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::NoTextBox){
+VerticalSlider::VerticalSlider() :
+    juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
+                 juce::Slider::NoTextBox) {
     this->setLookAndFeel(&this->lookAndFeel);
     this->setPopupDisplayEnabled(true, false, nullptr);
 }
 
-void VerticalSlider::paint(juce::Graphics& g){
-    Slider::paint(g);
-}
+void VerticalSlider::paint(juce::Graphics& g) { Slider::paint(g); }
 
-VerticalSlider::~VerticalSlider(){
-    this->setLookAndFeel(nullptr);
-}
+VerticalSlider::~VerticalSlider() { this->setLookAndFeel(nullptr); }
 
-Label::Label():juce::Label(){
+Label::Label() : juce::Label() {
     this->setLookAndFeel(&lookAndFeel);
     this->setEditable(false);
 }
-Label::~Label() {
-    this->setLookAndFeel(nullptr);
-}
+Label::~Label() { this->setLookAndFeel(nullptr); }
 
-
-CabButton::CabButton(juce::RangedAudioParameter* position) :juce::ImageButton(), onCabChoiceSelected(nullptr) {
-    juce::AudioParameterChoice* positionDC = dynamic_cast<juce::AudioParameterChoice*>(position);
+CabButton::CabButton(juce::RangedAudioParameter* position) :
+    juce::ImageButton(), onCabChoiceSelected(nullptr) {
+    juce::AudioParameterChoice* positionDC =
+        dynamic_cast<juce::AudioParameterChoice*>(position);
     this->setLookAndFeel(&lookAndFeel);
     this->popup.setLookAndFeel(&lookAndFeel);
 
-    this->popup.addItem(1, juce::String("Matched cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize));
-    this->popup.addItem(2, juce::String("No cab"), true, false, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize));
-    this->popup.addItem(3, juce::String("Load custom IR..."), true, false, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize));
+    this->popup.addItem(1,
+                        juce::String("Matched cab"),
+                        true,
+                        false,
+                        juce::ImageCache::getFromMemory(
+                            BinaryData::cab_png, BinaryData::cab_pngSize));
+    this->popup.addItem(2,
+                        juce::String("No cab"),
+                        true,
+                        false,
+                        juce::ImageCache::getFromMemory(
+                            BinaryData::nocab_png, BinaryData::nocab_pngSize));
+    this->popup.addItem(3,
+                        juce::String("Load custom IR..."),
+                        true,
+                        false,
+                        juce::ImageCache::getFromMemory(
+                            BinaryData::ir_png, BinaryData::ir_pngSize));
 
     setImageFromIndex(positionDC->getIndex());
 
     this->onClick = [this]() {
-        this->popup.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this).withPreferredPopupDirection(juce::PopupMenu::Options::PopupDirection::upwards),
+        this->popup.showMenuAsync(
+            juce::PopupMenu::Options()
+                .withTargetComponent(this)
+                .withPreferredPopupDirection(
+                    juce::PopupMenu::Options::PopupDirection::upwards),
             [this](int res) {
-               
-                if (res > 0) {
+                if(res > 0) {
                     // Convert Popup ID (1, 2, 3) to APVTS index (0, 1, 2)
                     this->setImageFromIndex(res - 1);
 
-                    if (onCabChoiceSelected != nullptr) {
+                    if(onCabChoiceSelected != nullptr) {
                         onCabChoiceSelected(res - 1);
                     }
                 }
-            }
-             );
+            });
     };
 }
 
-void CabButton::setImageFromIndex(int index)
-{
-    switch (index) {
-    case 0:
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::cab_png, BinaryData::cab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-        break;
-    case 1:
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::nocab_png, BinaryData::nocab_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-        break;
-    case 2:
-        this->setImages(false, true, true, juce::ImageCache::getFromMemory(BinaryData::ir_png, BinaryData::ir_pngSize), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite, juce::Image(), 1.0f, juce::Colours::transparentWhite);
-        break;
-    default:
-        break;
+void CabButton::setImageFromIndex(int index) {
+    switch(index) {
+        case 0:
+            this->setImages(false,
+                            true,
+                            true,
+                            juce::ImageCache::getFromMemory(
+                                BinaryData::cab_png, BinaryData::cab_pngSize),
+                            1.0f,
+                            juce::Colours::transparentWhite,
+                            juce::Image(),
+                            1.0f,
+                            juce::Colours::transparentWhite,
+                            juce::Image(),
+                            1.0f,
+                            juce::Colours::transparentWhite);
+            break;
+        case 1:
+            this->setImages(
+                false,
+                true,
+                true,
+                juce::ImageCache::getFromMemory(BinaryData::nocab_png,
+                                                BinaryData::nocab_pngSize),
+                1.0f,
+                juce::Colours::transparentWhite,
+                juce::Image(),
+                1.0f,
+                juce::Colours::transparentWhite,
+                juce::Image(),
+                1.0f,
+                juce::Colours::transparentWhite);
+            break;
+        case 2:
+            this->setImages(false,
+                            true,
+                            true,
+                            juce::ImageCache::getFromMemory(
+                                BinaryData::ir_png, BinaryData::ir_pngSize),
+                            1.0f,
+                            juce::Colours::transparentWhite,
+                            juce::Image(),
+                            1.0f,
+                            juce::Colours::transparentWhite,
+                            juce::Image(),
+                            1.0f,
+                            juce::Colours::transparentWhite);
+            break;
+        default:
+            break;
     }
 }
 
+// void CabButton::setVisible(bool shouldBeVisible){
+//     //Component::setVisible(shouldBeVisible);
+//     this->button.setBounds(this->getBounds());
+//     this->button.setVisible(shouldBeVisible);
+// }
 
-//void CabButton::setVisible(bool shouldBeVisible){
-//    //Component::setVisible(shouldBeVisible);
-//    this->button.setBounds(this->getBounds());
-//    this->button.setVisible(shouldBeVisible);
-//}
-
-CabButton::~CabButton(){
-    this->setLookAndFeel(nullptr);
+CabButton::~CabButton() {
     this->popup.setLookAndFeel(nullptr);
+    this->setLookAndFeel(nullptr);
 }
 
-CabButtonAttachment::CabButtonAttachment(juce::AudioProcessorValueTreeState& stateToUse, const juce::String& parameterID, CabButton& button):vts(stateToUse), button(button), parameter(nullptr){
-    this->parameter = dynamic_cast<juce::AudioParameterChoice*>(vts.getParameter(parameterID));
+CabButtonAttachment::CabButtonAttachment(
+    juce::AudioProcessorValueTreeState& stateToUse,
+    const juce::String& parameterID,
+    CabButton& button) : vts(stateToUse), button(button), parameter(nullptr) {
+    this->parameter = dynamic_cast<juce::AudioParameterChoice*>(
+        vts.getParameter(parameterID));
     jassert(parameter != nullptr);
 
     parameter->addListener(this);
 
     button.onCabChoiceSelected = [this](int index) {
-        const float normValue = static_cast<float>(index) / float(parameter->choices.size() - 1);
-        parameter->setValueNotifyingHost(normValue);
-        };
+        if(parameter != nullptr) {
+            float newValue = parameter->getNormalisableRange().convertTo0to1(
+                static_cast<float>(index));
 
+            parameter->beginChangeGesture();
+            parameter->setValueNotifyingHost(newValue);
+            parameter->endChangeGesture();
+
+            if(index == 2 && onCustomIrSelected != nullptr) {
+                onCustomIrSelected(index);
+            }
+        }
+    };
 }
 
-void CabButtonAttachment::parameterValueChanged(int parameterIndex, float newValue){
-    juce::MessageManager::callAsync([this](){
-        if (this->parameter == nullptr) 
-            return;
+void CabButtonAttachment::parameterValueChanged(int parameterIndex,
+                                                float newValue) {
+    juce::MessageManager::callAsync([this]() {
+        if(this->parameter == nullptr) return;
 
         button.setImageFromIndex(parameter->getIndex());
-        });
+    });
 }
 
 CabButtonAttachment::~CabButtonAttachment() {
-    if (parameter != nullptr)
-        parameter->removeListener(this);
+    if(parameter != nullptr) parameter->removeListener(this);
 }
