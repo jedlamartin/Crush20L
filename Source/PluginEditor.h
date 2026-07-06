@@ -1,83 +1,72 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
+
 #include "MyLookAndFeel.h"
+#include "PluginProcessor.h"
 
-//==============================================================================
-/**
-*/
-
-
-
-
-
-class OrangeCrush20LAudioProcessorEditor  : public juce::AudioProcessorEditor {
+class OrangeCrush20LAudioProcessorEditor : public juce::AudioProcessorEditor {
 public:
-    OrangeCrush20LAudioProcessorEditor(OrangeCrush20LAudioProcessor&, juce::AudioProcessorValueTreeState&);
+    OrangeCrush20LAudioProcessorEditor(OrangeCrush20LAudioProcessor&,
+                                       juce::AudioProcessorValueTreeState&);
     ~OrangeCrush20LAudioProcessorEditor() override;
 
-    //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     OrangeCrush20LAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
-
-    //TODO: dont use getrawparametervalue, use getparameter everywhere
 
     juce::Image background;
 
     Knob gainSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        gainAttachment;
 
     Knob bassSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassAttachment;
-
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        bassAttachment;
 
     Knob midSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> midAttachment;
-
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        midAttachment;
 
     Knob trebleSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trebleAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        trebleAttachment;
 
     Knob odSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> odAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        odAttachment;
 
     ToggleSwitch odButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> odButtonAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
+        odButtonAttachment;
 
     Knob volSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        volAttachment;
 
     ToggleSwitch powerButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> powerButtonAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
+        powerButtonAttachment;
 
     ListenerSwitch powerLed;
 
     Label inputGainLabel;
     VerticalSlider inputGain;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inputGainAttachment;
-
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        inputGainAttachment;
 
     Label outputGainLabel;
     VerticalSlider outputGain;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputGainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        outputGainAttachment;
 
     CabButton cabButton;
     std::unique_ptr<CabButtonAttachment> cabButtonAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrangeCrush20LAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        OrangeCrush20LAudioProcessorEditor)
 };

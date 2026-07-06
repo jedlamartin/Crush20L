@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Stage.h"
 #include "CircularBuffer.hpp"
+#include "Stage.h"
 
-class Stage1 : public Stage{
+class Stage1 : public Stage {
 private:
-	float A, B, C, D;
-	std::vector<CircularBuffer<float, 2>> yBuffer;
-	std::vector<CircularBuffer<float, 2>> uBuffer;
-	float maxInput, maxOutput;
+    float A, B, C, D;
+    std::vector<CircularBuffer<float, 2>> yBuffer;
+    std::vector<CircularBuffer<float, 2>> uBuffer;
+
 public:
-	Stage1();
-	void processBlock(juce::AudioBuffer<float>& buffer) override;
-	void configure(double sampleRate) override;
+    Stage1();
+    void processBlock(juce::AudioBuffer<float>& buffer) override;
+    void configure(double sampleRate) override;
 };

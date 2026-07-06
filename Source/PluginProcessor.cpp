@@ -1,18 +1,9 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 
 #include <cmath>
 
 #include "PluginEditor.h"
 
-//==============================================================================
 OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
     :
@@ -52,14 +43,13 @@ OrangeCrush20LAudioProcessor::OrangeCrush20LAudioProcessor()
     this->parameters.addParameterListener("mid", &stage4Attachment);
     this->parameters.addParameterListener("treble", &stage4Attachment);
 
-    // stage5
+    // Stage5
     stage5.initParameters(parameters.getRawParameterValue("vol"));
     this->parameters.addParameterListener("vol", &stage5Attachment);
 }
 
 OrangeCrush20LAudioProcessor::~OrangeCrush20LAudioProcessor() {}
 
-//==============================================================================
 const juce::String OrangeCrush20LAudioProcessor::getName() const {
     return JucePlugin_Name;
 }
@@ -92,11 +82,7 @@ double OrangeCrush20LAudioProcessor::getTailLengthSeconds() const {
     return 0.0;
 }
 
-int OrangeCrush20LAudioProcessor::getNumPrograms() {
-    return 1;    // NB: some hosts don't cope very well if you tell them there
-                 // are 0 programs, so this should be at least 1, even if you're
-                 // not really implementing programs.
-}
+int OrangeCrush20LAudioProcessor::getNumPrograms() { return 1; }
 
 int OrangeCrush20LAudioProcessor::getCurrentProgram() { return 0; }
 
@@ -122,10 +108,7 @@ void OrangeCrush20LAudioProcessor::prepareToPlay(double sampleRate,
     this->stage6.configure(sampleRate);
 }
 
-void OrangeCrush20LAudioProcessor::releaseResources() {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
-}
+void OrangeCrush20LAudioProcessor::releaseResources() {}
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool OrangeCrush20LAudioProcessor::isBusesLayoutSupported(
@@ -134,15 +117,10 @@ bool OrangeCrush20LAudioProcessor::isBusesLayoutSupported(
     juce::ignoreUnused(layouts);
     return true;
     #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
     if(layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() &&
        layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-        // This checks if the input layout matches the output layout
         #if !JucePlugin_IsSynth
     if(layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -162,9 +140,6 @@ void OrangeCrush20LAudioProcessor::processBlock(
 
     for(auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-
-    // a buffer adatai egy fontos mem cimen vannak, ahonnan nem szabad
-    // reallokalni az adatokat
 
     if(this->parameters.getRawParameterValue("power")->load() >= 0.5f) {
         float inputGain =
@@ -226,10 +201,7 @@ void OrangeCrush20LAudioProcessor::processBlock(
 }
 
 //==============================================================================
-bool OrangeCrush20LAudioProcessor::hasEditor() const {
-    return true;    // (change this to false if you choose to not supply an
-                    // editor)
-}
+bool OrangeCrush20LAudioProcessor::hasEditor() const { return true; }
 
 juce::AudioProcessorEditor* OrangeCrush20LAudioProcessor::createEditor() {
     return new OrangeCrush20LAudioProcessorEditor(*this, this->parameters);
@@ -238,20 +210,12 @@ juce::AudioProcessorEditor* OrangeCrush20LAudioProcessor::createEditor() {
 //==============================================================================
 void OrangeCrush20LAudioProcessor::getStateInformation(
     juce::MemoryBlock& destData) {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-
     juce::MemoryOutputStream mos(destData, true);
     this->parameters.state.writeToStream(mos);
 }
 
 void OrangeCrush20LAudioProcessor::setStateInformation(const void* data,
                                                        int sizeInBytes) {
-    // You should use this method to restore your parameters from this memory
-    // block, whose contents will have been created by the getStateInformation()
-    // call.
-
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
     if(tree.isValid()) {
         this->parameters.replaceState(tree);
@@ -260,7 +224,6 @@ void OrangeCrush20LAudioProcessor::setStateInformation(const void* data,
 
 juce::AudioProcessorValueTreeState::ParameterLayout
     OrangeCrush20LAudioProcessor::createParameterLayout() {
-
     juce::AudioProcessorValueTreeState::ParameterLayout vtsParameterLayout {
         std::make_unique<juce::AudioParameterBool>("power", "Power", false),
 
@@ -323,8 +286,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout
     return vtsParameterLayout;
 }
 
-//==============================================================================
-// This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
     return new OrangeCrush20LAudioProcessor();
 }

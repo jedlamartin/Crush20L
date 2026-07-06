@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginEditor.h"
 
 #include "PluginProcessor.h"
@@ -112,8 +104,6 @@ OrangeCrush20LAudioProcessorEditor::~OrangeCrush20LAudioProcessorEditor() {}
 
 //==============================================================================
 void OrangeCrush20LAudioProcessorEditor::paint(juce::Graphics& g) {
-    // (Our component is opaque, so we must completely fill the background with
-    // a solid colour)
     if(this->background.isValid()) {
         g.drawImage(this->background,
                     this->getLocalBounds().toFloat(),

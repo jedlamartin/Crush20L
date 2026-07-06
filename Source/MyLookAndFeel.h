@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    Knob.h
-    Created: 24 Nov 2024 5:30:03pm
-    Author:  Martin
-
-  ==============================================================================
-*/
-
 #pragma once
 #include <vector>
 
@@ -126,9 +116,7 @@ public:
     ~CabButton();
 };
 
-class CabButtonAttachment :
-    juce::AudioProcessorParameter::Listener {    // ezt kell jol megirni hogy
-                                                 // mukodjon a parameterrel
+class CabButtonAttachment : juce::AudioProcessorParameter::Listener {
 private:
     juce::AudioProcessorValueTreeState& vts;
     CabButton& button;

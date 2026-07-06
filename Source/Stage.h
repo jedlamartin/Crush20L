@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "JuceHeader.h"
 
 #define RESAMPLE
@@ -12,10 +13,11 @@ constexpr size_t INT_POINTS = 40;
 
 class Stage {
 protected:
-	float sampleRate;
-	const bool resampled;
+    float sampleRate;
+    const bool resampled;
+
 public:
-	Stage(bool resampled);
-	virtual void processBlock(juce::AudioBuffer<float>& buffer) = 0;
-	virtual void configure(double sampleRate) = 0;
+    Stage(bool resampled);
+    virtual void processBlock(juce::AudioBuffer<float>& buffer) = 0;
+    virtual void configure(double sampleRate) = 0;
 };
